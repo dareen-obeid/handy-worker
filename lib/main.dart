@@ -3,11 +3,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:handyworker/screens/login-signup/signin_screen.dart';
 import 'package:handyworker/screens/login-signup/signup_screen.dart';
-import 'package:handyworker/welcome/first_screen.dart';
-import 'package:handyworker/welcome/page2.dart';
-import 'package:handyworker/welcome/welcome_screen.dart';
+import 'package:handyworker/screens/welcome/first_screen.dart';
+import 'package:handyworker/screens/welcome/page2.dart';
+import 'package:handyworker/screens/welcome/welcome_screen.dart';
 
-import 'home_screen.dart';
+import 'screens/NavigationBarItem/home_screen.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();

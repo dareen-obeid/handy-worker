@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:handyworker/screens/login-signup/reset_password.dart';
 
-import '../../home_screen.dart';
+import '../NavigationBarItem/home_screen.dart';
 import '../../reusable_widgets/reusable_widget.dart';
-import '../../utils/color_utils.dart';
-import '../../welcome/first_screen.dart';
+import '../../reusable_widgets/utils/color_utils.dart';
+import '../welcome/first_screen.dart';
 
 
 
@@ -21,6 +21,15 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
+  final TextEditingController _firstTextController = TextEditingController();
+  final TextEditingController _lastTextController = TextEditingController();
+  final TextEditingController _bdayTextController = TextEditingController();
+  final TextEditingController _phoneTextController = TextEditingController();
+
+
+@override
+void dispose(){}
+
   bool _obscureText = true;
 
   @override

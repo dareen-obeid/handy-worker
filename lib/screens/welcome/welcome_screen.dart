@@ -1,8 +1,8 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:handyworker/welcome/page1.dart';
-import 'package:handyworker/welcome/page2.dart';
+import 'package:handyworker/screens/welcome/page1.dart';
+import 'package:handyworker/screens/welcome/page2.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});

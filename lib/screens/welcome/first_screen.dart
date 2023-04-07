@@ -1,10 +1,10 @@
 
 import 'package:flutter/material.dart';
 
-import '../reusable_widgets/reusable_widget.dart';
-import '../screens/login-signup/signin_screen.dart';
-import '../screens/login-signup/signup_screen.dart';
-import '../utils/color_utils.dart';
+import '../../reusable_widgets/reusable_widget.dart';
+import '../login-signup/signin_screen.dart';
+import '../login-signup/signup_screen.dart';
+import '../../reusable_widgets/utils/color_utils.dart';
 
 
 class FirstScreen extends StatefulWidget {

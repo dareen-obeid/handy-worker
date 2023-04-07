@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:handyworker/welcome/page2.dart';
 
-import '../utils/color_utils.dart';
+import '../../reusable_widgets/reusable_widget.dart';
+import '../../reusable_widgets/utils/color_utils.dart';
+import 'first_screen.dart';
 
 
-
-class Page1 extends StatefulWidget {
-  const Page1({Key? key}) : super(key: key);
+class Page2 extends StatefulWidget {
+  const Page2({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _Page1State createState() => _Page1State();
+  _Page2State createState() => _Page2State();
 }
 
-class _Page1State extends State<Page1> {
-
+class _Page2State extends State<Page2> {
   @override
-  Widget build(BuildContext context) {
+   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
           width: MediaQuery.of(context).size.width,
@@ -32,7 +31,7 @@ class _Page1State extends State<Page1> {
                   0, MediaQuery.of(context).size.height * 0.05, 0, 0),
               child: Column(children: <Widget>[
                 Image.asset(
-                  "images/page1.png",
+                  "images/page2.png",
                   height: 500,
                   width: double.infinity,
                 ),
@@ -44,18 +43,18 @@ class _Page1State extends State<Page1> {
                       Container(
                         width: 10,
                         height: 10,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xFF00ABB3),
+                          color: const Color(0xFF00ABB3).withOpacity(0.2),
                         ),
                       ),
                       const SizedBox(width: 10), // add some space between the circles
                       Container(
                         width: 10,
                         height: 10,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFF00ABB3).withOpacity(0.2),
+                          color: Color(0xFF00ABB3),
                         ),
                       ),
                     ],
@@ -79,29 +78,11 @@ class _Page1State extends State<Page1> {
                 const SizedBox(
                   height: 30,
                 ),
-                // signinButton(context, "LOG IN", () {
-                //     // Navigator.push(context,
-                //     //     MaterialPageRoute(builder: (context) => SignInScreen()));
-                // }),
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF00ABB3),
-                    shape: BoxShape.circle,
-                  ),
-                  child: InkWell(
-                    child: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Page2()),
-                      );
-                    },
-                  ),
-                  
-                ),
-
+                getstart(context, "Get Start", () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => const FirstScreen()));
+                }),
+                
               ]
               ),
             ),

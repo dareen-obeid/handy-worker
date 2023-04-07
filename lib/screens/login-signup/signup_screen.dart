@@ -2,10 +2,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../home_screen.dart';
+import '../NavigationBarItem/home_screen.dart';
 import '../../reusable_widgets/reusable_widget.dart';
-import '../../utils/color_utils.dart';
-import '../../welcome/first_screen.dart';
+import '../../reusable_widgets/utils/color_utils.dart';
+import '../welcome/first_screen.dart';
 
 
 class SignUpScreen extends StatefulWidget {

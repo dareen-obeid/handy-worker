@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:handyworker/screens/login-signup/signin_screen.dart';
 
 import '../../reusable_widgets/reusable_widget.dart';
-import '../../utils/color_utils.dart';
+import '../../reusable_widgets/utils/color_utils.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({Key? key}) : super(key: key);
