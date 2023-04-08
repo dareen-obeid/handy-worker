@@ -21,15 +21,6 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
-  final TextEditingController _firstTextController = TextEditingController();
-  final TextEditingController _lastTextController = TextEditingController();
-  final TextEditingController _bdayTextController = TextEditingController();
-  final TextEditingController _phoneTextController = TextEditingController();
-
-
-@override
-void dispose(){}
-
   bool _obscureText = true;
 
   @override
