@@ -55,6 +55,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'email': email,
       'phone': phone,
     });
+    
   }
 
   // bool passwordConfirmed() {
