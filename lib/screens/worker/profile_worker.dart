@@ -2,19 +2,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:handyworker/screens/NavigationBarItem/profileItems/become_worker.dart';
+import 'package:handyworker/screens/worker/account.dart';
 
+import '../NavigationBarItem/home_screen.dart';
 import '../login-signup/signin_screen.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+class ProfileWorker extends StatefulWidget {
+  const ProfileWorker({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfileWorkerState createState() => _ProfileWorkerState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfileWorkerState extends State<ProfileWorker> {
   late String? email;
   late String name = "";
 
@@ -43,6 +44,17 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+//   final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+// Future<void> removeWorker(String email) async {
+//   try {
+//     await _db.collection('workers').doc(email).delete();
+//     print('Worker with email $email has been removed');
+//   } catch (e) {
+//     print('Error removing worker: $e');
+//   }
+// }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +82,12 @@ class _ProfilePageState extends State<ProfilePage> {
             ListTile(
               leading: const Icon(Icons.account_circle),
               title: const Text('Account'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AccountWorker()));
+              },
             ),
             const Divider(),
             ListTile(
@@ -86,13 +103,28 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.people_outline_sharp),
-              title: const Text('Become a Worker'),
-              onTap: () {
+              leading: const Icon(Icons.person_2),
+              title: const Text('retuen to normal worker'),
+              onTap: () async {
+                final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+                final CollectionReference _workerCollection =
+                    _firestore.collection('workers');
+
+                final QuerySnapshot snapshot = await _workerCollection
+                    .where('email', isEqualTo: email)
+                    .get();
+
+                if (snapshot.docs.isNotEmpty) {
+                  final DocumentSnapshot doc = snapshot.docs[0];
+                  await _workerCollection.doc(doc.id).delete();
+                }
+                print(email);
+                
+                // ignore: use_build_context_synchronously
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const BecomeWorker()));
+                        builder: (context) => const Homesreen()));
               },
             ),
             const Divider(),

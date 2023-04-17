@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:handyworker/screens/worker/profile_worker.dart';
 
-import 'home.dart';
-import 'notification.dart';
-import 'profile.dart';
-import 'search.dart';
+import '../NavigationBarItem/home.dart';
+import '../NavigationBarItem/notification.dart';
+import '../NavigationBarItem/search.dart';
 
-class Homesreen extends StatefulWidget {
-  const Homesreen({Key? key}) : super(key: key);
+
+
+class HomeWorker extends StatefulWidget {
+  const HomeWorker({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _HomesreenState createState() => _HomesreenState();
+  _HomeWorkerState createState() => _HomeWorkerState();
 }
 
-class _HomesreenState extends State<Homesreen> {
+class _HomeWorkerState extends State<HomeWorker> {
   List pages = [
     const HomePage(),
     const SearchPage(),
     const NotificationPage(),
-    const ProfilePage(),
+    const ProfileWorker(),
   ];
   int currentIndex = 0;
   void onTap(int index) {

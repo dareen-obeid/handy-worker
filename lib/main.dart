@@ -1,13 +1,11 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:handyworker/screens/login-signup/signin_screen.dart';
-import 'package:handyworker/screens/login-signup/signup_screen.dart';
 import 'package:handyworker/screens/welcome/first_screen.dart';
-import 'package:handyworker/screens/welcome/page2.dart';
-import 'package:handyworker/screens/welcome/welcome_screen.dart';
 
-import 'screens/NavigationBarItem/home_screen.dart';
+import 'package:handyworker/screens/welcome/welcome_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,38 +19,141 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
+    Widget homeScreen;
+
+    if (user != null) {
+      homeScreen = const FirstScreen();
+    } else {
+      homeScreen = const WelcomeScreen();
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Handy Worker',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      // home: const SignInScreen(),
-      //  home: const FirstScreen(),
-            routes: {
-        '/page2': (context) => const Page2(),
-        '/firstscreen': (context) => const FirstScreen(),
-        '/login': (context) => const SignInScreen(),
-        '/signup': (context) => const SignUpScreen(),
-        
-        '/home': (context) => const Homesreen(),
-
-
-      },
-      home: const WelcomeScreen(),
-
-
-      
+      home: homeScreen,
     );
   }
 }
 
+
+
+
+
+// void main() async{
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp();
+//   runApp(const MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       title: 'Handy Worker',
+//       theme: ThemeData(
+
+//         primarySwatch: Colors.blue,
+//       ),
+
+//       //       routes: {
+//       //   '/page2': (context) => const Page2(),
+//       //   '/firstscreen': (context) => const FirstScreen(),
+//       //   '/login': (context) => const SignInScreen(),
+//       //   '/signup': (context) => const SignUpScreen(),
+        
+//       //   '/home': (context) => const Homesreen(),
+
+
+//       // },
+//       home: const WelcomeScreen(),
+
+
+      
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+//if the email is in workers collocation  in firebase go to HomeWorker
+// if not go Homesreen
+// and if is the first time use application go to WelcomeScreen
+
+// void main() async{
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp();
+//   runApp(const MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({Key? key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return StreamBuilder(
+//       stream: FirebaseAuth.instance.authStateChanges(),
+//       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           return const CircularProgressIndicator();
+//         } else {
+//           if (snapshot.hasData) {
+//             // User is already signed in, check if they are a worker or not
+//             User? user = snapshot.data;
+//             String? email = user?.email;
+
+//             // Check if the user's email is in the workers collection
+//             // Replace this with your own code to check if the email is in the workers collection
+//             bool isWorker = false;
+
+//             // ignore: dead_code
+//             if (isWorker) {
+//               return MaterialApp(
+//                 debugShowCheckedModeBanner: false,
+//                 title: 'Handy Worker',
+//                 theme: ThemeData(
+//                   primarySwatch: Colors.blue,
+//                 ),
+//                 home: const HomeWorker(),
+//               );
+//             } else {
+//               // User is not a worker, navigate to the regular home screen
+//               return MaterialApp(
+//                 debugShowCheckedModeBanner: false,
+//                 title: 'Handy Worker',
+//                 theme: ThemeData(
+//                   primarySwatch: Colors.blue,
+//                 ),
+//                 home: const FirstScreen(),
+//               );
+//             }
+//           } else {
+//             // User is not signed in, navigate to the welcome screen
+//             return MaterialApp(
+//               debugShowCheckedModeBanner: false,
+//               title: 'Handy Worker',
+//               theme: ThemeData(
+//                 primarySwatch: Colors.blue,
+//               ),
+//               home: const WelcomeScreen(),
+//             );
+//           }
+//         }
+//       },
+//     );
+//   }
+// }
