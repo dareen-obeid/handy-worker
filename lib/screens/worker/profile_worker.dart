@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:handyworker/screens/worker/profile.dart';
 
 import '../NavigationBarItem/home_screen.dart';
 import '../login-signup/signin_screen.dart';
+import 'account.dart';
 
 class ProfileWorker extends StatefulWidget {
   const ProfileWorker({Key? key}) : super(key: key);
@@ -96,6 +96,7 @@ Container(
                     context,
                     MaterialPageRoute(
                         builder: (context) =>  WorkerProfilePage()));
+                        
               },
             ),
             const Divider(),
