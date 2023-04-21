@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:handyworker/screens/login-signup/reset_password.dart';
@@ -6,6 +7,7 @@ import '../NavigationBarItem/home_screen.dart';
 import '../../reusable_widgets/reusable_widget.dart';
 import '../../reusable_widgets/utils/color_utils.dart';
 import '../welcome/first_screen.dart';
+import '../worker/home_worker.dart';
 
 
 
@@ -21,6 +23,34 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
+
+  void _onSubmit(BuildContext context) async {
+  final String email = _emailTextController.text.trim();
+  if (email.isNotEmpty) {
+    await checkWorkerStatus(context, email);
+  }
+}
+
+Future<void> checkWorkerStatus(BuildContext context, String email) async {
+  final QuerySnapshot workerSnapshot = await FirebaseFirestore.instance
+      .collection('workers')
+      .where('email', isEqualTo: email)
+      .get();
+  if (workerSnapshot.docs.isNotEmpty) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeWorker()),
+    );
+  } else {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const Homesreen()),
+    );
+  }
+}
+
+
+
   bool _obscureText = true;
 
   @override
@@ -128,8 +158,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           email: _emailTextController.text,
                           password: _passwordTextController.text)
                       .then((value) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const Homesreen()));
+                        _onSubmit(context);
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) => const Homesreen()));
                   }).onError((error, stackTrace) {
                     print("ERROR ${error.toString()}");
                     showDialog(
@@ -166,3 +197,6 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 }
+
+
+

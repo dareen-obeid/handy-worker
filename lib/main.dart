@@ -1,10 +1,11 @@
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:handyworker/screens/welcome/first_screen.dart';
+import 'package:handyworker/screens/NavigationBarItem/home_screen.dart';
 
 import 'package:handyworker/screens/welcome/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:handyworker/screens/worker/home_worker.dart';
 
 
 void main() async{
@@ -16,14 +17,39 @@ void main() async{
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
+    final email = user?.email;
+
+    Future<Widget> checkWorkerStatus(String email) async {
+      final QuerySnapshot workerSnapshot = await FirebaseFirestore.instance
+          .collection('workers')
+          .where('email', isEqualTo: email)
+          .get();
+      if (workerSnapshot.docs.isNotEmpty) {
+        return const HomeWorker();
+      } else {
+        return const Homesreen();
+      }
+    }
+
+
     Widget homeScreen;
 
     if (user != null) {
-      homeScreen = const FirstScreen();
+      homeScreen = FutureBuilder(
+        future: checkWorkerStatus(email!),
+        builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return snapshot.data!;
+          } else {
+            return const CircularProgressIndicator();
+          }
+        },
+      );
     } else {
       homeScreen = const WelcomeScreen();
     }

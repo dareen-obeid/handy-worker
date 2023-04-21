@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 class NotificationPage extends StatefulWidget {
-  const NotificationPage({ Key? key }) : super(key: key);
+  const NotificationPage({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -10,11 +12,21 @@ class NotificationPage extends StatefulWidget {
 class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: const Center(
-        child: Text("noti"),
-      ),
-      
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Center(
+          child: Text("noti"),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final FirebaseAuth _auth = FirebaseAuth.instance;
+            final User? user = _auth.currentUser;
+            print(user);
+          },
+          child: const Text('Press me'),
+        ),
+      ],
     );
   }
 }

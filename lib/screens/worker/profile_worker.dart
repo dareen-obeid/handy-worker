@@ -17,32 +17,32 @@ class ProfileWorker extends StatefulWidget {
 
 class _ProfileWorkerState extends State<ProfileWorker> {
   late String? email;
-  late String name = "";
+  // late String name = "";
 
   @override
   void initState() {
     super.initState();
     final user = FirebaseAuth.instance.currentUser;
     email = user?.email ?? ' ';
-    name = "";
-    _loadData();
+    // name = "";
+    // _loadData();
   }
 
-  Future<void> _loadData() async {
-    final uEmail = FirebaseAuth.instance.currentUser!.email;
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: uEmail)
-        .get();
-    if (querySnapshot.docs.isNotEmpty) {
-      final data = querySnapshot.docs[0].data();
-      final firstName = data['first name'];
-      final lastName = data['last name'];
-      setState(() {
-        name = '$firstName $lastName';
-      });
-    }
-  }
+  // Future<void> _loadData() async {
+  //   final uEmail = FirebaseAuth.instance.currentUser!.email;
+  //   final querySnapshot = await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .where('email', isEqualTo: uEmail)
+  //       .get();
+  //   if (querySnapshot.docs.isNotEmpty) {
+  //     final data = querySnapshot.docs[0].data();
+  //     final firstName = data['first name'];
+  //     final lastName = data['last name'];
+  //     setState(() {
+  //       name = '$firstName $lastName';
+  //     });
+  //   }
+  // }
 
 //   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
@@ -68,10 +68,10 @@ class _ProfileWorkerState extends State<ProfileWorker> {
             const SizedBox(
               height: 15,
             ),
-            Text(
-              name,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
+            // Text(
+            //   name,
+            //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            // ),
             Text(
               email!,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -86,7 +86,7 @@ class _ProfileWorkerState extends State<ProfileWorker> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const AccountWorker()));
+                        builder: (context) =>  WorkerProfilePage()));
               },
             ),
             const Divider(),
