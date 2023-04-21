@@ -288,47 +288,6 @@ void pickUploadProfilePic() async {
 ),
 
 
-//                     GestureDetector(
-//   onTap: () {
-//     pickUploadProfilePic();
-//   },
-//   child: ClipOval(
-//     child: Container(
-//       width: 80,
-//       height: 80,
-//       decoration: BoxDecoration(
-//         shape: BoxShape.circle,
-//         image: DecorationImage(
-//           fit: BoxFit.cover,
-//           image: profilePicLink == " "
-//             ? NetworkImage('https://www.w3schools.com/w3images/avatar2.png')
-//             : NetworkImage(profilePicLink),
-//         ),
-//       ),
-//     ),
-//   ),
-// ),
-
-// GestureDetector(
-//                       onTap: () {
-//                         pickUploadProfilePic();
-//                       },
-//                       child: Container(
-//                         child: profilePicLink == " " ? const Icon(
-//                     Icons.person,
-//                     color: Colors.white,
-//                     size: 80,
-//                   ) : ClipRRect(
-//                     borderRadius: BorderRadius.circular(20),
-//                     child: Image.network(profilePicLink),
-//                   ),
-//                 ),
-                      //  const CircleAvatar(
-                      //   radius: 40,
-                      //   backgroundImage: NetworkImage(
-                      //       'https://www.w3schools.com/w3images/avatar2.png'),
-                      // ),
-//                     ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
@@ -441,23 +400,23 @@ void pickUploadProfilePic() async {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Expanded(
-                  child: GridView.count(
-                    crossAxisCount: 3,
-                    children: List.generate(
-                      15,
-                      (index) => Container(
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(
-                                'https://www.w3schools.com/w3images/girl_hat.jpg'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // Expanded(
+                //   child: GridView.count(
+                //     crossAxisCount: 3,
+                //     children: List.generate(
+                //       15,
+                //       (index) => Container(
+                //         decoration: const BoxDecoration(
+                //           image: DecorationImage(
+                //             image: NetworkImage(
+                //                 'https://www.w3schools.com/w3images/girl_hat.jpg'),
+                //             fit: BoxFit.cover,
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             );
           }),

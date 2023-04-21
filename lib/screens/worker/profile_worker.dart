@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:handyworker/screens/worker/account.dart';
+import 'package:handyworker/screens/worker/profile.dart';
 
 import '../NavigationBarItem/home_screen.dart';
 import '../login-signup/signin_screen.dart';
