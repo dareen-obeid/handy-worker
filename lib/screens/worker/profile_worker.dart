@@ -17,14 +17,15 @@ class ProfileWorker extends StatefulWidget {
 
 class _ProfileWorkerState extends State<ProfileWorker> {
   late String? email;
-  // late String name = "";
+  late String photo = "";
 
   @override
   void initState() {
     super.initState();
     final user = FirebaseAuth.instance.currentUser;
     email = user?.email ?? ' ';
-    // name = "";
+    photo =user?.photoURL ?? ' ';
+    print("this is"+photo);
     // _loadData();
   }
 
@@ -61,10 +62,18 @@ class _ProfileWorkerState extends State<ProfileWorker> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage('images/download.png'),
-            ),
+Container(
+        width: 80,
+        height: 80,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image:
+               NetworkImage(photo),
+          ),
+        ),
+      ),
             const SizedBox(
               height: 15,
             ),
