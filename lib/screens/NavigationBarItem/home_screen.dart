@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'home.dart';
+import 'home/home.dart';
 import 'notification.dart';
 import 'profile.dart';
 import 'search.dart';

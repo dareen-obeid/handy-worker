@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../models/worker.dart';
+import 'package:handyworker/screens/NavigationBarItem/home/workerprofile.dart';
+import '../../../models/worker.dart';
 
 class WorkerListPage extends StatefulWidget {
   final String service;
@@ -55,8 +56,14 @@ class _WorkerListPageState extends State<WorkerListPage> {
             trailing: const Icon(Icons.arrow_forward),
             onTap: () {
               // Navigate to the worker details screen
-              print(workers![index].firstName);
-              print(workers![index].city);
+              // print(workers![index].firstName);
+              // print(workers![index].city);
+              Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => WorkerFromUser(worker: workers![index]),
+    ),
+  );
             },
           );
         },

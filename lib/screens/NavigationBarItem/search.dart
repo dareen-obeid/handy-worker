@@ -63,7 +63,8 @@ class _SearchPageState extends State<SearchPage> {
                   ],
                 ),
                 const Expanded(
-                  child: Center(
+                  child:
+                   Center(
                     child: Text(
                       'Filter Screen',
                       style: TextStyle(fontSize: 20),

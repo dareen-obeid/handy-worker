@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:handyworker/screens/worker/profile_worker.dart';
 
-import '../NavigationBarItem/home.dart';
+import '../NavigationBarItem/home/home.dart';
 import '../NavigationBarItem/notification.dart';
 import '../NavigationBarItem/search.dart';
 

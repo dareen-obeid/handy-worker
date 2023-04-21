@@ -113,6 +113,7 @@ void pickUploadProfilePic() async {
   if (Platform.isIOS) {
     Reference oldRef = FirebaseStorage.instance.ref().child("https://profilepics/$uid.jpg");
     oldRef.delete().catchError((error) => print("Error deleting previous profile picture: $error"));
+    
 
     Reference newRef = FirebaseStorage.instance
         .ref()
@@ -264,7 +265,7 @@ void pickUploadProfilePic() async {
           image: DecorationImage(
             fit: BoxFit.cover,
             image: photo == ""
-              ? NetworkImage('https://www.w3schools.com/w3images/avatar2.png')
+              ? const NetworkImage('https://www.w3schools.com/w3images/avatar2.png')
               : NetworkImage(photo),
           ),
         ),
