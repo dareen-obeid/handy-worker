@@ -8,38 +8,48 @@ class HomePage extends StatefulWidget {
   // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
+    List<String> services = [
+      'Electrical work',
+      'Plumbing',
+      'Painting',
+      'Blacksmithing',
+      'Welding',
+      'Carpentry',
+      'House Cleaning',
+
+    ];
 
 class _HomePageState extends State<HomePage> {
-  @override
+    @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
+        body: ListView(
         children: [
           _buildCategoriesRow([
             {
               'color': const Color.fromARGB(255, 101, 205, 250),
               'icon': Icons.electrical_services,
-              'label': 'Electrician'
+              'label': services[0]
             },
             {
               'color': const Color.fromARGB(255, 250, 107, 107),
               'icon': Icons.plumbing,
-              'label': 'Plumbing'
+              'label': services[1]
             },
             {
               'color': const Color.fromARGB(255, 143, 241, 187),
-              'icon': Icons.construction,
-              'label': 'Construction'
+              'icon': Icons.format_paint,
+              'label': services[2]
             },
             {
               'color': const Color.fromARGB(255, 178, 221, 125),
-              'icon': Icons.format_paint,
-              'label': 'Painting'
+              'icon': Icons.construction,
+              'label': services[3]
             },
             {
               'color': const Color.fromARGB(255, 253, 149, 93),
               'icon': Icons.ac_unit,
-              'label': 'House Cleaning'
+              'label': services[4]
             },
           ]),
           // Add other content here
