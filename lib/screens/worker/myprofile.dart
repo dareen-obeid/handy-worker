@@ -69,18 +69,54 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
     }
   }
 
-// //photo
-// void pickUploadProfilePic() async {
-//     final image = await ImagePicker().pickImage(
-//       source: ImageSource.gallery,
-//       maxHeight: 512,
-//       maxWidth: 512,
-//       imageQuality: 90,
-//     );
 
-//     String uid = FirebaseAuth.instance.currentUser!.uid;
+// //photo
+void pickUploadProfilePic() async {
+    final image = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxHeight: 512,
+      maxWidth: 512,
+      imageQuality: 90,
+    );
+
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    Reference oldRef = FirebaseStorage.instance.ref().child("https://profilepics/$uid.jpg");
+    oldRef.delete().catchError((error) => print("Error deleting previous profile picture: $error"));
+
+    Reference newRef = FirebaseStorage.instance
+        .ref()
+        .child("https://profilepics/$uid.jpg");
+
+    await newRef.putFile(File(image!.path));
+
+    newRef.getDownloadURL().then((value) async {
+      print(value);
+      setState(() {
+        photo = value;
+        photoUrl= value;
+      });
+      await FirebaseAuth.instance.currentUser!.updatePhotoURL(photo);
+      _updatePhoto(photoUrl);
+    });
+}
+
+  //photo
+
+
+// void pickUploadProfilePic() async {
+//   final image = await ImagePicker().pickImage(
+//     source: ImageSource.gallery,
+//     maxHeight: 512,
+//     maxWidth: 512,
+//     imageQuality: 90,
+//   );
+
+//   String uid = FirebaseAuth.instance.currentUser!.uid;
+
+//   if (Platform.isIOS) {
 //     Reference oldRef = FirebaseStorage.instance.ref().child("https://profilepics/$uid.jpg");
 //     oldRef.delete().catchError((error) => print("Error deleting previous profile picture: $error"));
+    
 
 //     Reference newRef = FirebaseStorage.instance
 //         .ref()
@@ -95,143 +131,74 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
 //       });
 //       await FirebaseAuth.instance.currentUser!.updatePhotoURL(photo);
 //     });
+//   } else if (Platform.isAndroid) {
+//     Reference oldRef = FirebaseStorage.instance.ref().child("profilepics/$uid.jpg");
+//     oldRef.delete().catchError((error) => print("Error deleting previous profile picture: $error"));
+
+//     Reference newRef = FirebaseStorage.instance
+//         .ref()
+//         .child("profilepics/$uid.jpg");
+
+//     await newRef.putFile(File(image!.path));
+
+//     newRef.getDownloadURL().then((value) async {
+//       print(value);
+//       setState(() {
+//         photo = value;
+//       });
+//       await FirebaseAuth.instance.currentUser!.updatePhotoURL(photo);
+//     });
+//   }
 // }
 
-  //photo
-
-
-void pickUploadProfilePic() async {
-  final image = await ImagePicker().pickImage(
-    source: ImageSource.gallery,
-    maxHeight: 512,
-    maxWidth: 512,
-    imageQuality: 90,
-  );
-
-  String uid = FirebaseAuth.instance.currentUser!.uid;
-
-  if (Platform.isIOS) {
-    Reference oldRef = FirebaseStorage.instance.ref().child("https://profilepics/$uid.jpg");
-    oldRef.delete().catchError((error) => print("Error deleting previous profile picture: $error"));
-    
-
-    Reference newRef = FirebaseStorage.instance
-        .ref()
-        .child("https://profilepics/$uid.jpg");
-
-    await newRef.putFile(File(image!.path));
-
-    newRef.getDownloadURL().then((value) async {
-      print(value);
-      setState(() {
-        photo = value;
-      });
-      await FirebaseAuth.instance.currentUser!.updatePhotoURL(photo);
-    });
-  } else if (Platform.isAndroid) {
-    Reference oldRef = FirebaseStorage.instance.ref().child("profilepics/$uid.jpg");
-    oldRef.delete().catchError((error) => print("Error deleting previous profile picture: $error"));
-
-    Reference newRef = FirebaseStorage.instance
-        .ref()
-        .child("profilepics/$uid.jpg");
-
-    await newRef.putFile(File(image!.path));
-
-    newRef.getDownloadURL().then((value) async {
-      print(value);
-      setState(() {
-        photo = value;
-      });
-      await FirebaseAuth.instance.currentUser!.updatePhotoURL(photo);
-    });
+Future<void> _updatePhoto(String photo) async {
+  final user = FirebaseAuth.instance.currentUser;
+  final email = user?.email ?? '';
+  final querySnapshot = await FirebaseFirestore.instance
+      .collection('workers')
+      .where('email', isEqualTo: email)
+      .get();
+  if (querySnapshot.docs.isNotEmpty) {
+    var documentSnapshot = querySnapshot.docs[0];
+    await documentSnapshot.reference.update({'photoUrl': photo});
   }
 }
 
 
-// void pickUploadProfilePic() async {
-//   final ImagePicker _picker = ImagePicker();
-//   final XFile? image = await showDialog<XFile>(
-//     context: context,
-//     builder: (BuildContext context) {
-//       return SimpleDialog(
-//         title: const Text('Choose an option'),
-//         children: <Widget>[
-//           SimpleDialogOption(
-//             onPressed: () {
-//               Navigator.pop(context, _picker.pickImage(
-//                 source: ImageSource.camera,
-//                 maxHeight: 512,
-//                 maxWidth: 512,
-//                 imageQuality: 90,
-//               ));
-//             },
-//             child: const Text('Take a new photo'),
-//           ),
-//           SimpleDialogOption(
-//             onPressed: () {
-//               Navigator.pop(context, _picker.pickImage(
-//                 source: ImageSource.gallery,
-//                 maxHeight: 512,
-//                 maxWidth: 512,
-//                 imageQuality: 90,
-//               ));
-//             },
-//             child: const Text('Select from gallery'),
-//           ),
-//         ],
-//       );
-//     },
-//   );
-
-//   if (image == null) {
-//     return;
-//   }
-
-//   Reference ref = FirebaseStorage.instance
-//     .ref()
-//     .child("https://profilepics/${FirebaseAuth.instance.currentUser!.uid}.jpg");
-
-//   await ref.putFile(File(image.path));
-
-//   ref.getDownloadURL().then((value) async {
-//     print(value);
-//     setState(() {
-//       photo = value;
-//     });
-//     await FirebaseAuth.instance.currentUser!.updatePhotoURL(photo);
-//   });
-// }
-
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-                backgroundColor: Color(0xFF00ABB3),
-        elevation: 0,
-        title: const Text('My Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => WorkerInformationPage(uid: uid)),
-              );
-              if (result == true) {
-                // refresh the page only if editing is complete
-                setState(() {
-                  _loadData();
-                  photo;
-                });
-              }
-            },
-          ),
-        ],
-      ),
+appBar: AppBar(
+  backgroundColor: Color(0xFF00ABB3),
+  elevation: 0,
+  title: const Text('My Profile'),
+  leading: IconButton(
+    icon: Icon(Icons.arrow_back),
+    onPressed: () {
+      Navigator.pop(context,photoUrl);
+    },
+  ),
+  actions: [
+    IconButton(
+      icon: const Icon(Icons.edit),
+      onPressed: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => WorkerInformationPage(uid: uid)),
+        );
+        if (result == true) {
+          // refresh the page only if editing is complete
+          setState(() {
+            _loadData();
+            photo;
+          });
+        }
+      },
+    ),
+  ],
+),
+
 
 
 
@@ -253,7 +220,6 @@ void pickUploadProfilePic() async {
                     children: [
                      GestureDetector(
   onTap: () {
-    pickUploadProfilePic();
   },
   child: Stack(
     children: [
@@ -423,4 +389,7 @@ void pickUploadProfilePic() async {
           }),
     );
   }
+
+  
 }
+

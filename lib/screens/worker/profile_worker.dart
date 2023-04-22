@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../NavigationBarItem/home_screen.dart';
 import '../login-signup/signin_screen.dart';
-import 'account.dart';
+import 'myprofile.dart';
 
 class ProfileWorker extends StatefulWidget {
   const ProfileWorker({Key? key}) : super(key: key);
@@ -24,8 +24,8 @@ class _ProfileWorkerState extends State<ProfileWorker> {
     super.initState();
     final user = FirebaseAuth.instance.currentUser;
     email = user?.email ?? ' ';
-    photo =user?.photoURL ?? ' ';
-    print("this is"+photo);
+    photo = user?.photoURL ?? ' ';
+    print("this is" + photo);
     // _loadData();
   }
 
@@ -62,18 +62,17 @@ class _ProfileWorkerState extends State<ProfileWorker> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-Container(
-        width: 80,
-        height: 80,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image:
-               NetworkImage(photo),
-          ),
-        ),
-      ),
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: NetworkImage(photo),
+                ),
+              ),
+            ),
             const SizedBox(
               height: 15,
             ),
@@ -91,12 +90,14 @@ Container(
             ListTile(
               leading: const Icon(Icons.account_circle),
               title: const Text('Account'),
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>  WorkerProfilePage()));
-                        
+                        builder: (context) => WorkerProfilePage()));
+                setState(() {
+                  photo = result;
+                });
               },
             ),
             const Divider(),
@@ -129,12 +130,10 @@ Container(
                   await _workerCollection.doc(doc.id).delete();
                 }
                 print(email);
-                
+
                 // ignore: use_build_context_synchronously
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Homesreen()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Homesreen()));
               },
             ),
             const Divider(),
