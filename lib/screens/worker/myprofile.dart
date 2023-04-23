@@ -26,7 +26,9 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
     phone;
     photoUrl;
     description;
+    uid=user?.uid ?? ' ';
     _loadData();
+    print(uid);
   }
 
   late String? email;
@@ -80,6 +82,7 @@ void pickUploadProfilePic() async {
     );
 
     String uid = FirebaseAuth.instance.currentUser!.uid;
+    print(uid);
     Reference oldRef = FirebaseStorage.instance.ref().child("https://profilepics/$uid.jpg");
     oldRef.delete().catchError((error) => print("Error deleting previous profile picture: $error"));
 
@@ -167,6 +170,8 @@ Future<void> _updatePhoto(String photo) async {
 
   @override
   Widget build(BuildContext context) {
+        print(uid);
+
     return Scaffold(
 appBar: AppBar(
   backgroundColor: Color(0xFF00ABB3),
@@ -187,6 +192,7 @@ appBar: AppBar(
           MaterialPageRoute(
               builder: (context) => WorkerInformationPage(uid: uid)),
         );
+        print(result);
         if (result == true) {
           // refresh the page only if editing is complete
           setState(() {

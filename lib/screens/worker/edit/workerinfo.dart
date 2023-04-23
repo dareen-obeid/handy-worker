@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../reusable_widgets/reusable_widget.dart';
@@ -16,19 +17,22 @@ class WorkerInformationPage extends StatefulWidget {
 }
 
 class _WorkerInformationPageState extends State<WorkerInformationPage> {
+  late String photo;
 // @override
 //   void initState() {
 //     super.initState();
 //     final user = FirebaseAuth.instance.currentUser;
-//     email = user?.email ?? ' ';
-//     name;
-//     service;
-//     city;
-//     phone;
-//     photoUrl;
-//     description;
-//     id;
-//     _loadData();
+//     photo = user?.photoURL ?? ' ';
+
+//     // email = user?.email ?? ' ';
+//     // name;
+//     // service;
+//     // city;
+//     // phone;
+//     // photoUrl;
+//     // description;
+//     // id;
+//     // _loadData();
 
 //   }
 
@@ -87,7 +91,11 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
   @override
   void initState() {
     super.initState();
+    final user = FirebaseAuth.instance.currentUser;
+    photo = user?.photoURL ?? ' ';
     _loadWorkerInformation();
+    print(widget.uid);
+    print(_worker);
   }
 
   Future<void> _loadWorkerInformation() async {
@@ -110,6 +118,8 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.uid);
+    print(_worker);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF00ABB3),
@@ -249,13 +259,13 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
         city: _cityController.text,
         phone: _phoneController.text,
         email: _emailController.text,
-        photoUrl: _photoUrlController.text,
+        photoUrl: photo,
         description: _descriptionController.text,
         availability:
             Map<String, String>.from(json.decode(_availabilityController.text)),
-        uid: '',
+        uid: widget.uid,
       );
-      await workerProvider.updateWorker(updatedWorker);
+      await workerProvider.updateWorkerByEmail(updatedWorker);
       // Navigator.push(
       //   context,
       //   MaterialPageRoute(builder: (context) => WorkerProfilePage()),
