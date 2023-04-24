@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ import 'WorkerProvider.dart';
 class WorkerInformationPage extends StatefulWidget {
   final String uid;
 
-  const WorkerInformationPage({required this.uid});
+  const WorkerInformationPage({super.key, required this.uid});
 
   @override
   _WorkerInformationPageState createState() => _WorkerInformationPageState();
@@ -18,62 +19,6 @@ class WorkerInformationPage extends StatefulWidget {
 
 class _WorkerInformationPageState extends State<WorkerInformationPage> {
   late String photo;
-// @override
-//   void initState() {
-//     super.initState();
-//     final user = FirebaseAuth.instance.currentUser;
-//     photo = user?.photoURL ?? ' ';
-
-//     // email = user?.email ?? ' ';
-//     // name;
-//     // service;
-//     // city;
-//     // phone;
-//     // photoUrl;
-//     // description;
-//     // id;
-//     // _loadData();
-
-//   }
-
-//   late String email;
-//   late String name = "";
-//   late String id = "";
-
-//   late String service = "";
-//   late String city = "";
-//   late String phone = "";
-//   late String photoUrl = "";
-//   late String description = "";
-
-//   Future<void> _loadData() async {
-//     final uEmail = FirebaseAuth.instance.currentUser!.email;
-//     final querySnapshot = await FirebaseFirestore.instance
-//         .collection('workers')
-//         .where('email', isEqualTo: uEmail)
-//         .get();
-//     if (querySnapshot.docs.isNotEmpty) {
-//       var data = querySnapshot.docs[0].data();
-//       var firstName = data['firstName'];
-//       var lastName = data['lastName'];
-//       var serviceValue = data['service'];
-//       var cityValue = data['city'];
-//       var phoneValue = data['phone'];
-//       var photoUrlValue = data['photoUrl'];
-//       var descriptionValue = data['description'];
-//       var id = data['id'];
-
-//       setState(() {
-//         name = '$firstName $lastName';
-//         service = '$serviceValue';
-//         city = '$cityValue';
-//         phone = '$phoneValue';
-//         photoUrl = '$photoUrlValue';
-//         description = '$descriptionValue';
-//         id = '$id';
-//       });
-//     }
-//   }
 
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
@@ -84,7 +29,6 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
   final _emailController = TextEditingController();
   final _photoUrlController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _availabilityController = TextEditingController();
 
   Worker? _worker;
 
@@ -101,6 +45,7 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
   Future<void> _loadWorkerInformation() async {
     final workerProvider = WorkerProvider();
     final worker = await workerProvider.getWorker(widget.uid);
+    print(worker);
     setState(() {
       _worker = worker;
       _firstNameController.text = worker.firstName;
@@ -111,18 +56,55 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
       _emailController.text = worker.email;
       _photoUrlController.text = worker.photoUrl;
       _descriptionController.text = worker.description;
-      _availabilityController.text = worker.availability.toString();
+
+      final av = worker.availability;
+      for (int i = 0; i < days.length; i++) {
+        final x = (av[days[i]])?.split("-");
+
+        if (x != null && x.isNotEmpty) {
+          controllers[i * 2].text = x[0];
+          controllers[i * 2 + 1].text = x[1];
+        }
+
+        // if (startTime.isNotEmpty && endTime.isNotEmpty) {
+        //   availability[days[i]] = '$startTime-$endTime';
+        // }
+      }
     });
     print(_worker);
   }
 
+  // Create a list of days
+  final List<String> days = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
+  ];
+
+// Create a list to hold the controllers for each text field
+  final List<TextEditingController> controllers = List.generate(
+    7 * 2,
+    (_) => TextEditingController(),
+  );
+
+// Generate controllers for the AM and PM dropdowns and add them to the list
+
+  final Map<String, String> availability = {};
+
   @override
   Widget build(BuildContext context) {
-    print(widget.uid);
-    print(_worker);
+    // Store the availability map in Firestore
+    // FirebaseFirestore.instance.collection('workers').doc(widget.uid).update({
+    //   'availability': availability,
+    // });
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF00ABB3),
+        backgroundColor: const Color(0xFF00ABB3),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
@@ -198,17 +180,6 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
                         return null;
                       },
                     ),
-                    // TextFormField(
-                    //   controller: _emailController,
-                    //   decoration: const InputDecoration(labelText: 'Email'),
-                    //   validator: (value) {
-                    //     if (value == null || value.isEmpty) {
-                    //       return 'Please enter an email address';
-                    //     }
-                    //     return null;
-                    //   },
-                    // ),
-
                     TextFormField(
                       controller: _descriptionController,
                       decoration:
@@ -220,28 +191,90 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
                         return null;
                       },
                     ),
-                    TextFormField(
-                      controller: _availabilityController,
-                      decoration:
-                          const InputDecoration(labelText: 'Availability'),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter availability';
-                        }
-                        return null;
-                      },
+                    const SizedBox(height: 16.0),
+                    Column(
+                      children: [
+                        Row(
+                          children: const [
+                            Text(
+                              'Available:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: const [
+                            Text(
+                              'Use 24-hour format',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
+                        ),
+                        for (int i = 0; i < days.length; i++)
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 80, // fixed width for day label
+                                child: Text(days[i]),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: TextField(
+                                  controller: controllers[i * 2],
+                                  decoration: const InputDecoration(
+                                    hintText: 'Start time',
+                                  ),
+                                ),
+                              ),
+                              // const SizedBox(width: 10),
+                              // DropdownButton<String>(
+                              //   value: 'AM',
+                              //   onChanged: (String? newValue) {},
+                              //   items: <String>[
+                              //     'AM',
+                              //     'PM'
+                              //   ].map<DropdownMenuItem<String>>((String value) {
+                              //     return DropdownMenuItem<String>(
+                              //       value: value,
+                              //       child: Text(value),
+                              //     );
+                              //   }).toList(),
+                              // ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: TextField(
+                                  controller: controllers[i * 2 + 1],
+                                  decoration: const InputDecoration(
+                                    hintText: 'End time',
+                                  ),
+                                ),
+                              ),
+                              // const SizedBox(width: 10),
+                              // DropdownButton<String>(
+                              //   value: 'AM',
+                              //   onChanged: (String? newValue) {},
+                              //   items: <String>[
+                              //     'AM',
+                              //     'PM'
+                              //   ].map<DropdownMenuItem<String>>((String value) {
+                              //     return DropdownMenuItem<String>(
+                              //       value: value,
+                              //       child: Text(value),
+                              //     );
+                              //   }).toList(),
+                              // ),
+                            ],
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 16.0),
-
                     getstart(context, "Save Changes", _saveChanges),
-
-                    // ElevatedButton(
-                    //   onPressed: () async {
-                    //     _saveChanges();
-
-                    //   },
-                    //   child: const Text('Save Changes'),
-                    // ),
                   ],
                 ),
               ),
@@ -250,6 +283,13 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
   }
 
   Future<void> _saveChanges() async {
+    for (int i = 0; i < days.length; i++) {
+      final String startTime = controllers[i * 2].text;
+      final String endTime = controllers[i * 2 + 1].text;
+      if (startTime.isNotEmpty && endTime.isNotEmpty) {
+        availability[days[i]] = '$startTime-$endTime';
+      }
+    }
     if (_formKey.currentState!.validate()) {
       final workerProvider = WorkerProvider();
       final updatedWorker = Worker(
@@ -261,49 +301,13 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
         email: _emailController.text,
         photoUrl: photo,
         description: _descriptionController.text,
-        availability:
-            Map<String, String>.from(json.decode(_availabilityController.text)),
+        availability: availability,
+        // Map<String, String>.from(json.decode(_availabilityController.text)),
         uid: widget.uid,
       );
+      print(availability);
       await workerProvider.updateWorkerByEmail(updatedWorker);
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => WorkerProfilePage()),
-      // );
       Navigator.pop(context, true);
     }
   }
-
-//   void _saveChanges() async {
-//     print("_saveChanges");
-//   if (_formKey.currentState!.validate()) {
-//     final workerProvider = WorkerProvider();
-
-//     final updatedWorker = Worker(
-//       uid: widget.uid,
-//       firstName: _firstNameController.text,
-//       lastName: _lastNameController.text,
-//       service: _serviceController.text,
-//       city: _cityController.text,
-//       phone: _phoneController.text,
-//       email: _emailController.text,
-//       photoUrl: _photoUrlController.text,
-//       description: _descriptionController.text,
-//       availability: Map<String, String>.from(json.decode(_availabilityController.text)),
-//     );
-
-//     await workerProvider.updateWorker(updatedWorker);
-
-//     setState(() {
-//       _worker = updatedWorker;
-//     });
-
-//     // ignore: use_build_context_synchronously
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(
-//         content: Text('Worker information updated successfully.'),
-//       ),
-//     );
-//   }
-// }
 }
