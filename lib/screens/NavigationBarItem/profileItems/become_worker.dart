@@ -180,7 +180,7 @@ class _BecomeWorkerState extends State<BecomeWorker> {
                   service: _selectedItem,
                   availability: {},
                   description: '',
-                  photoUrl: 'images/download.png',
+                  photoUrl: '',
                 );
 
                 

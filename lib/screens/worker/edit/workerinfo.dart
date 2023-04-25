@@ -37,9 +37,8 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
     super.initState();
     final user = FirebaseAuth.instance.currentUser;
     photo = user?.photoURL ?? ' ';
+    
     _loadWorkerInformation();
-    print(widget.uid);
-    print(_worker);
   }
 
   Future<void> _loadWorkerInformation() async {
@@ -304,6 +303,9 @@ class _WorkerInformationPageState extends State<WorkerInformationPage> {
         availability: availability,
         // Map<String, String>.from(json.decode(_availabilityController.text)),
         uid: widget.uid,
+        mediaUrls: _worker!.mediaUrls, 
+        // numReviews: _worker!.numReviews, 
+        // rating: _worker!.rating,
       );
       print(availability);
       await workerProvider.updateWorkerByEmail(updatedWorker);
