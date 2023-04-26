@@ -30,7 +30,6 @@ class _WorkerListPageState extends State<WorkerListPage> {
         isLoading = false; // set isLoading to false when the data is loaded
       });
     });
-
   }
 
   @override
@@ -94,9 +93,9 @@ class _WorkerListPageState extends State<WorkerListPage> {
                                 fit: BoxFit.cover,
                               ),
                             )
-                          : Icon(
-                              Icons.person,
-                              size: 50,
+                          : Image.network(
+                              'https://www.w3schools.com/w3images/avatar2.png',
+                              fit: BoxFit.cover,
                             ),
                     ),
                     SizedBox(width: 16),
