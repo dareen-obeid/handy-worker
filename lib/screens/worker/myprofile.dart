@@ -63,7 +63,7 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
       var descriptionValue = data['description'];
       var uid = data['uid'];
       var availabilityValue = Map<String, String>.from(data['availability']);
-      var mediaUrlsValue;
+      var mediaUrlsValue = <String>[];
       if (data['mediaUrls'] != null && data['mediaUrls'].isNotEmpty) {
         mediaUrlsValue = List<String>.from(data['mediaUrls']);
       }
