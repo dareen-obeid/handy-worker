@@ -59,20 +59,22 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
                   GestureDetector(
                     child: Stack(
                       children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: widget.worker.photoUrl == ""
-                                  ? const NetworkImage(
-                                      'https://www.w3schools.com/w3images/avatar2.png')
-                                  : NetworkImage(widget.worker.photoUrl),
-                            ),
-                          ),
-                        ),
+ Container(
+  width: 80,
+  height: 80,
+  decoration: BoxDecoration(
+    shape: BoxShape.circle,
+    image: DecorationImage(
+      fit: BoxFit.cover,
+      image: widget.worker.photoUrl != null &&
+              widget.worker.photoUrl.isNotEmpty &&
+              Uri.parse(widget.worker.photoUrl).isAbsolute
+          ? NetworkImage(widget.worker.photoUrl)
+          : const NetworkImage('https://www.w3schools.com/w3images/avatar2.png'),
+    ),
+  ),
+),
+
                       ],
                     ),
                   ),

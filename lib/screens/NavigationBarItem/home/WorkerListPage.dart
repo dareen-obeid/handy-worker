@@ -85,7 +85,8 @@ class _WorkerListPageState extends State<WorkerListPage> {
                       height: 100,
                       width: 100,
                       child: workers![index].photoUrl != null &&
-                              workers![index].photoUrl.isNotEmpty
+                              workers![index].photoUrl.isNotEmpty &&
+                              Uri.parse(workers![index].photoUrl).isAbsolute
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
