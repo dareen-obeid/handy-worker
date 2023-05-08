@@ -89,6 +89,7 @@ class _SearchPageState extends State<SearchPage> {
                   icon: Icon(Icons.filter_list, color: Colors.grey),
                 ),
                 SizedBox(width: 10),
+                //clear button for the search bar 
                 IconButton(
                   onPressed: _clearSearch,
                   icon: Icon(Icons.clear, color: Colors.grey),
@@ -139,3 +140,4 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 /**** */
+//********************** */
