@@ -56,7 +56,6 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: Column(
         children: [
           Container(
@@ -139,5 +138,3 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 }
-/**** */
-//********************** */

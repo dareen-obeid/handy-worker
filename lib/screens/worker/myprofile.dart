@@ -168,6 +168,23 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
     }
   }
 
+    void _showBiggerImageDialog(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.contain,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     print(uid);
@@ -365,7 +382,7 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
                   const SizedBox(height: 6),
 
                   SizedBox(
-                    height: 60,
+                    height: 100,
                     child: Text(
                       description,
                       style: const TextStyle(
@@ -373,6 +390,8 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
                       ),
                     ),
                   ),
+
+
                   Row(
                     children: [
                       const Text(
@@ -401,31 +420,31 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
                   ),
                   const SizedBox(height: 10),
 
-                  Expanded(
-                    child: mediaUrls.isEmpty || mediaUrls==null
-                        ? const Center(
-                            child: Text('No images to display'),
-                          )
-                        : GridView.count(
-                            crossAxisCount: 3,
-                            children: List.generate(
-                              mediaUrls.length,
-                              (index) => Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: NetworkImage(mediaUrls[index]),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
+                                   Expanded(
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 1,
+                      ),
+                      itemCount: mediaUrls.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () {
+                            _showBiggerImageDialog(mediaUrls[index]);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(mediaUrls[index]),
                               ),
                             ),
                           ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -434,3 +453,5 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
     );
   }
 }
+
+
