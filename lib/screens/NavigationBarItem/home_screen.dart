@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:handyworker/screens/NavigationBarItem/favorites.dart';
 
 import 'home/home.dart';
 import 'notification.dart';
@@ -58,14 +59,18 @@ class _HomesreenState extends State<Homesreen> {
                 child: Icon(Icons.favorite_border, color: Colors.black),
               ),
               onPressed: () {
-                // add favorite functionality here
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //       builder: (context) =>
+                //           const Favorites()), // Navigate to the favorite page
+                // );
               },
             ),
           ],
         ),
       ),
-      body:
-       pages[currentIndex],
+      body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTap,
         currentIndex: currentIndex,

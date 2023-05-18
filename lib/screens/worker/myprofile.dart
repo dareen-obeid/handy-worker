@@ -12,7 +12,7 @@ class WorkerProfilePage extends StatefulWidget {
   @override
   _WorkerProfilePageState createState() => _WorkerProfilePageState();
 }
-
+  int x = 1;
 class _WorkerProfilePageState extends State<WorkerProfilePage> {
   @override
   void initState() {
@@ -128,7 +128,7 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
   }
   //photo
 
-  int x = 0;
+
 
   void pickUploadPhotos() async {
     final image = await ImagePicker().pickImage(
@@ -140,7 +140,7 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
 
     String uid = FirebaseAuth.instance.currentUser!.uid;
     print(uid);
-
+    x++;
     Reference newRef =
         FirebaseStorage.instance.ref().child("https://profilepics/$uid$x.jpg");
     x++;

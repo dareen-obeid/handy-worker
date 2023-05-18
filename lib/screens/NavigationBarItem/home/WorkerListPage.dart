@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:handyworker/screens/NavigationBarItem/home/WorkerViewFromUser.dart';
@@ -15,9 +16,16 @@ class WorkerListPage extends StatefulWidget {
 class _WorkerListPageState extends State<WorkerListPage> {
   List<Worker>? workers;
   bool isLoading = true;
+  final user = FirebaseAuth.instance.currentUser;
+
+  // Use a Set to store favorite worker IDs
+  Set<String> favorites = {};
+
   @override
   void initState() {
     super.initState();
+            retrieveFavorites();
+
     isLoading = true;
     // Retrieve the list of workers from Firebase based on the selected service
     FirebaseFirestore.instance
@@ -28,9 +36,87 @@ class _WorkerListPageState extends State<WorkerListPage> {
       setState(() {
         workers = snapshot.docs.map((doc) => Worker.fromSnapshot(doc)).toList();
         isLoading = false; // set isLoading to false when the data is loaded
+
+        // Retrieve the user's favorites list
+        retrieveFavorites();
       });
     });
   }
+
+  Future<void> retrieveFavorites() async {
+    try {
+      final userEmail = user?.email;
+      if (userEmail != null) {
+        final userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: userEmail)
+            .get();
+
+        if (userSnapshot.docs.isNotEmpty) {
+          final userDoc = userSnapshot.docs.first;
+          favorites = Set<String>.from(userDoc.data()['favorites'] ?? []);
+          // print(favorites);
+        }
+      }
+    } catch (error) {
+      // Handle error here
+    }
+  }
+
+  Future<void> addToFavorites(String userEmail, String workerId) async {
+    try {
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: userEmail)
+          .get();
+
+      if (userSnapshot.docs.isNotEmpty) {
+        final userDoc = userSnapshot.docs.first;
+        final userRef = FirebaseFirestore.instance.collection('users').doc(userDoc.id);
+
+        await userRef.update({
+          'favorites': FieldValue.arrayUnion([workerId])
+        });
+
+        setState(() {
+          favorites.add(workerId);
+        });
+      }
+    } catch (error) {
+      // Handle error here
+    }
+  }
+
+  Future<void> removeFromFavorites(String userEmail, String workerId) async {
+    try {
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: userEmail)
+          .get();
+
+      if (userSnapshot.docs.isNotEmpty) {
+        final userDoc = userSnapshot.docs.first;
+        final userRef = FirebaseFirestore.instance.collection('users').doc(userDoc.id);
+
+        await userRef.update({
+          'favorites': FieldValue.arrayRemove([workerId])
+        });
+
+        setState(() {
+          favorites.remove(workerId);
+        });
+      }
+    } catch (error) {
+      // Handle error here
+    }
+  }
+
+bool isFavorite(String workerId) {
+  // print('Favorites: $favorites');
+  // print('Is Favorite? ${favorites.contains(workerId)}');
+  return favorites.contains(workerId);
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +130,7 @@ class _WorkerListPageState extends State<WorkerListPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF00ABB3),
+        backgroundColor: const Color(0xFF00ABB3),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
@@ -55,7 +141,7 @@ class _WorkerListPageState extends State<WorkerListPage> {
         ),
         title: Text(
           widget.service,
-          style: TextStyle(
+          style: const TextStyle(
             color: Color.fromARGB(255, 255, 255, 255),
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -65,14 +151,16 @@ class _WorkerListPageState extends State<WorkerListPage> {
       body: ListView.builder(
         itemCount: workers!.length,
         itemBuilder: (BuildContext context, int index) {
+          final worker = workers![index];
+          final isFavoriteWorker = isFavorite(worker.id);
+
           return Card(
             child: InkWell(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        WorkerFromUser(worker: workers![index]),
+                    builder: (context) => WorkerFromUser(worker: worker),
                   ),
                 );
               },
@@ -84,13 +172,13 @@ class _WorkerListPageState extends State<WorkerListPage> {
                     SizedBox(
                       height: 100,
                       width: 100,
-                      child: workers![index].photoUrl != null &&
-                              workers![index].photoUrl.isNotEmpty &&
-                              Uri.parse(workers![index].photoUrl).isAbsolute
+                      child: worker.photoUrl != null &&
+                              worker.photoUrl.isNotEmpty &&
+                              Uri.parse(worker.photoUrl).isAbsolute
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
-                                workers![index].photoUrl,
+                                worker.photoUrl,
                                 fit: BoxFit.cover,
                               ),
                             )
@@ -99,27 +187,44 @@ class _WorkerListPageState extends State<WorkerListPage> {
                               fit: BoxFit.cover,
                             ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${workers![index].firstName} ${workers![index].lastName}",
-                            style: TextStyle(
+                            "${worker.firstName} ${worker.lastName}",
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
-                            workers![index].city,
-                            style: TextStyle(fontSize: 16),
+                            worker.city,
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ],
                       ),
                     ),
-                    Icon(Icons.arrow_forward),
+                    IconButton(
+                      icon: Icon(
+                        isFavoriteWorker ? Icons.favorite : Icons.favorite_border,
+                        color: isFavoriteWorker ? Colors.red : null,
+                      ),
+                      onPressed: () {
+                        final userEmail = user?.email;
+                        if (userEmail != null) {
+                          setState(() {
+                            if (isFavoriteWorker) {
+                              removeFromFavorites(userEmail, worker.id);
+                            } else {
+                              addToFavorites(userEmail, worker.id);
+                            }
+                          });
+                        }
+                      },
+                    ),
                   ],
                 ),
               ),
