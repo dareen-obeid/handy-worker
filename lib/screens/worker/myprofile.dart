@@ -12,7 +12,9 @@ class WorkerProfilePage extends StatefulWidget {
   @override
   _WorkerProfilePageState createState() => _WorkerProfilePageState();
 }
-  int x = 1;
+
+int x = 1;
+
 class _WorkerProfilePageState extends State<WorkerProfilePage> {
   @override
   void initState() {
@@ -128,8 +130,6 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
   }
   //photo
 
-
-
   void pickUploadPhotos() async {
     final image = await ImagePicker().pickImage(
       source: ImageSource.gallery,
@@ -168,7 +168,7 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
     }
   }
 
-    void _showBiggerImageDialog(String imageUrl) {
+  void _showBiggerImageDialog(String imageUrl) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -318,48 +318,48 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 50,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                              size: 20,
-                            ),
-                            SizedBox(width: 5),
-                            Text(
-                              '4.5',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Text(
-                              '100',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              'Reviews',
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                  // SizedBox(
+                  //   height: 50,
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //     children: [
+                  //       Row(
+                  //         mainAxisAlignment: MainAxisAlignment.center,
+                  //         children: const [
+                  //           Icon(
+                  //             Icons.star,
+                  //             color: Colors.yellow,
+                  //             size: 20,
+                  //           ),
+                  //           SizedBox(width: 5),
+                  //           Text(
+                  //             '4.5',
+                  //             style: TextStyle(
+                  //               fontSize: 20,
+                  //               fontWeight: FontWeight.bold,
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //       Column(
+                  //         mainAxisAlignment: MainAxisAlignment.center,
+                  //         children: const [
+                  //           Text(
+                  //             '100',
+                  //             style: TextStyle(
+                  //               fontSize: 20,
+                  //               fontWeight: FontWeight.bold,
+                  //             ),
+                  //           ),
+                  //           Text(
+                  //             'Reviews',
+                  //             style: TextStyle(color: Colors.grey),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                   Divider(
                     thickness: 1,
                     color: Colors.grey[400],
@@ -391,7 +391,6 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
                     ),
                   ),
 
-
                   Row(
                     children: [
                       const Text(
@@ -420,7 +419,7 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
                   ),
                   const SizedBox(height: 10),
 
-                                   Expanded(
+                  Expanded(
                     child: GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -453,5 +452,3 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
     );
   }
 }
-
-
