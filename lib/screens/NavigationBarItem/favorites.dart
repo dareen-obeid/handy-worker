@@ -27,53 +27,64 @@ class _FavPageState extends State<FavPage> {
 
   Future<void> fetchFavorites() async {
     try {
-      final favoritesSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userId)
-          .collection('favorites')
-          .get();
+final userRef = FirebaseFirestore.instance.collection('users');
+final userSnapshot = await userRef.where('email', isEqualTo: user!.email).get();
 
-      final favoriteWorkerIds = favoritesSnapshot.docs.map((doc) => doc.id).toList();
+if (userSnapshot.docs.isNotEmpty) {
+  final userDoc = userSnapshot.docs.first;
+  final favorites = userDoc.data()['favorites'] ?? [];
 
-      if (favoriteWorkerIds.isNotEmpty) {
-        final snapshot = await FirebaseFirestore.instance
-            .collection('workers')
-            .where('id', whereIn: favoriteWorkerIds)
-            .get();
 
-        setState(() {
-          workers = snapshot.docs.map((doc) => Worker.fromSnapshot(doc)).toList();
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          workers = [];
-          isLoading = false;
-        });
-      }
+
+  if (favorites.isNotEmpty) {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('workers')
+        .where(FieldPath.documentId, whereIn: favorites)
+        .get();
+
+              print(snapshot.size);
+
+
+    setState(() {
+      workers = snapshot.docs.map((doc) => Worker.fromSnapshot(doc)).toList();
+      isLoading = false;
+    });
+  } else {
+    setState(() {
+      workers = [];
+      isLoading = false;
+    });
+  }
+}
+
+
     } catch (error) {
       // Handle error here
       print(error.toString());
     }
   }
+Future<void> removeFromFavorites(String workerId) async {
+  try {
+    final userRef = FirebaseFirestore.instance.collection('users');
+    final userDoc = await userRef.doc(widget.userId).get();
 
-  Future<void> removeFromFavorites(String workerId) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userId)
-          .collection('favorites')
-          .doc(workerId)
-          .delete();
+    if (userDoc.exists) {
+      final favorites = userDoc.data()?['favorites'] ?? [];
+      favorites.remove(workerId);
+
+      await userRef.doc(widget.userId).update({'favorites': favorites});
 
       setState(() {
         workers.removeWhere((worker) => worker.id == workerId);
       });
-    } catch (error) {
-      // Handle error here
-      print(error.toString());
     }
+  } catch (error) {
+    // Handle error here
+    print(error.toString());
   }
+}
+
+
 
   bool isFavorite(String workerId) {
     return workers.any((worker) => worker.id == workerId);
@@ -82,7 +93,7 @@ class _FavPageState extends State<FavPage> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
         ),
@@ -170,7 +181,9 @@ class _FavPageState extends State<FavPage> {
                     ),
                     IconButton(
                       icon: Icon(
-                        isFavoriteWorker ? Icons.favorite : Icons.favorite_border,
+                        isFavoriteWorker
+                            ? Icons.favorite
+                            : Icons.favorite_border,
                         color: isFavoriteWorker ? Colors.red : null,
                       ),
                       onPressed: () {
