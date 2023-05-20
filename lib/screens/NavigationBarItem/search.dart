@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/worker.dart';
+import 'home/WorkerViewFromUser.dart';
+
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
   @override
@@ -69,7 +72,7 @@ class _SearchPageState extends State<SearchPage> {
                 Expanded(
                   child: TextField(
                     controller: _searchController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: 'Search for Services',
                       hintStyle: TextStyle(color: Colors.grey),
@@ -87,11 +90,11 @@ class _SearchPageState extends State<SearchPage> {
                   onPressed: _toggleFilterScreen,
                   icon: Icon(Icons.filter_list, color: Colors.grey),
                 ),
-                SizedBox(width: 10),
-                //clear button for the search bar 
+                const SizedBox(width: 10),
+                //clear button for the search bar
                 IconButton(
                   onPressed: _clearSearch,
-                  icon: Icon(Icons.clear, color: Colors.grey),
+                  icon: const Icon(Icons.clear, color: Colors.grey),
                 ),
               ],
             ),
@@ -106,11 +109,11 @@ class _SearchPageState extends State<SearchPage> {
                     children: [
                       IconButton(
                         onPressed: _toggleFilterScreen,
-                        icon: Icon(Icons.close),
+                        icon: const Icon(Icons.close),
                       ),
                     ],
                   ),
-                  Expanded(
+                  const Expanded(
                     child: Center(
                       child: Text(
                         'Filter Screen',
@@ -121,18 +124,47 @@ class _SearchPageState extends State<SearchPage> {
                 ],
               ),
             ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _resultsList.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_resultsList[index]['service']),
-                  subtitle: Text(_resultsList[index]['firstName']),
-                  trailing: Text(_resultsList[index]['email']),
-                );
-              },
+    Expanded(
+  child: ListView.builder(
+    itemCount: _resultsList.length,
+    itemBuilder: (context, index) {
+      final result = _resultsList[index];
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WorkerFromUser(worker: Worker.fromSnapshot(result)),
             ),
-          ),
+          );
+        },
+        child: ListTile(
+          leading: result['photoUrl'] != null &&
+                  result['photoUrl'].isNotEmpty &&
+                  result['photoUrl'] != " "
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    result['photoUrl'],
+                    fit: BoxFit.cover,
+                    width: 50,
+                    height: 50,
+                  ),
+                )
+              : Image.network(
+                  'https://www.w3schools.com/w3images/avatar2.png',
+                  fit: BoxFit.cover,
+                  width: 50,
+                  height: 50,
+                ),
+          title: Text(result['firstName'] + " " + result['lastName']),
+          subtitle: Text(result['service']),
+        ),
+      );
+    },
+  ),
+),
+
         ],
       ),
     );
