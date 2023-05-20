@@ -5,19 +5,19 @@ import 'package:handyworker/screens/NavigationBarItem/home/reviews/Review.dart';
 import 'package:handyworker/screens/NavigationBarItem/home/reviews/ReviewsService.dart';
 
 import '../../../../models/worker.dart';
+import 'package:intl/intl.dart';
 
 class ReviewPage extends StatefulWidget {
   final Worker worker;
 
-  const ReviewPage({ Key? key, required this.worker }) : super(key: key);
+  const ReviewPage({Key? key, required this.worker}) : super(key: key);
 
   @override
   _ReviewPageState createState() => _ReviewPageState();
 }
 
-
 class _ReviewPageState extends State<ReviewPage> {
-final ReviewsService _reviewsService = ReviewsService();
+  final ReviewsService _reviewsService = ReviewsService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _reviewTextController = TextEditingController();
   double _rating = 0;
@@ -26,17 +26,50 @@ final ReviewsService _reviewsService = ReviewsService();
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.worker.firstName} ${widget.worker.lastName}"),
+        backgroundColor: const Color(0xFF00ABB3),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(
+          "${widget.worker.firstName} ${widget.worker.lastName}",
+          style: const TextStyle(
+              color: Color.fromARGB(255, 255, 255, 255),
+              fontSize: 24,
+              fontWeight: FontWeight.bold),
+        ),
       ),
+
+      // appBar: AppBar(
+      //   title: Text("${widget.worker.firstName} ${widget.worker.lastName}"),
+      // ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
+          const SizedBox(height: 10),
+          SizedBox(
+            width: 200,
             height: 200,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage(widget.worker.photoUrl),
-                fit: BoxFit.cover,
+            child: Center(
+              child: Container(
+                width: 200,
+                height: 200,
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      widget.worker.photoUrl.isEmpty ||
+                              widget.worker.photoUrl.trim().isEmpty
+                          ? 'https://www.w3schools.com/w3images/avatar2.png'
+                          : widget.worker.photoUrl,
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             ),
           ),
@@ -44,7 +77,7 @@ final ReviewsService _reviewsService = ReviewsService();
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: const [
                 // Text(
                 //   'Rating: ${widget.worker.rating}',
                 //   style: TextStyle(fontSize: 18),
@@ -62,13 +95,13 @@ final ReviewsService _reviewsService = ReviewsService();
               stream: _reviewsService.getReviewsForWorker(widget.worker.id),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return Center(
+                  return const Center(
                     child: Text('Error loading reviews'),
                   );
                 }
 
                 if (!snapshot.hasData) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
@@ -82,8 +115,16 @@ final ReviewsService _reviewsService = ReviewsService();
 
                     return ListTile(
                       title: Text(review.text),
-                      subtitle: Text(
-                          '${review.rating} stars by ${review.userId} on ${review.timestamp}'),
+                      subtitle: Row(
+                        children: [
+                          Text('${review.rating}'),
+                          const SizedBox(width: 5),
+                          const Icon(Icons.star, color: Colors.yellow),
+                          const SizedBox(width: 5),
+                          Text(
+                              'stars by someone on ${DateFormat('yyyy-MM-dd / hh:mm').format(review.timestamp)}'),
+                        ],
+                      ),
                     );
                   },
                 );
@@ -95,11 +136,11 @@ final ReviewsService _reviewsService = ReviewsService();
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Add your review',
                   style: TextStyle(fontSize: 18),
                 ),
-               SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     RatingBar.builder(
@@ -109,8 +150,8 @@ final ReviewsService _reviewsService = ReviewsService();
                       allowHalfRating: true,
                       itemCount: 5,
                       itemSize: 24,
-                      itemPadding: EdgeInsets.symmetric(horizontal: 4),
-                      itemBuilder: (context, _) => Icon(
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 4),
+                      itemBuilder: (context, _) => const Icon(
                         Icons.star,
                         color: Colors.amber,
                       ),
@@ -120,19 +161,26 @@ final ReviewsService _reviewsService = ReviewsService();
                         });
                       },
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: TextField(
                         controller: _reviewTextController,
-                        decoration: InputDecoration(
+                        cursorColor:
+                            const Color(0xFF00ABB3), // Set the cursor color
+                        decoration: const InputDecoration(
                           hintText: 'Enter your review',
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF00ABB3)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Color(0xFF00ABB3)),
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () async {
                     User? user = _auth.currentUser;
@@ -155,8 +203,37 @@ final ReviewsService _reviewsService = ReviewsService();
                       });
                     }
                   },
-                  child: Text('Submit review'),
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.resolveWith((states) {
+                      if (states.contains(MaterialState.pressed)) {
+                        return Colors.black26;
+                      }
+                      return const Color(0xFF00ABB3);
+                    }),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(90),
+                      ),
+                    ),
+                  ),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 50,
+                    child: const Center(
+                      child: Text(
+                        'Submit review',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
+                                const SizedBox(height: 30),
+
               ],
             ),
           ),
