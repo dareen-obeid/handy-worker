@@ -23,6 +23,22 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
     email = user?.email ?? ' ';
     photo = user?.photoURL ?? ' ';
   }
+  void _showBiggerImageDialog(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.contain,
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -230,35 +246,39 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
               ),
             ),
             const SizedBox(height: 10),
-
-            Expanded(
-              child: widget.worker.mediaUrls.isEmpty ||
-                      widget.worker.mediaUrls == null
-                  ? const Center(
-                      child: Text('No images to display'),
-                    )
-                  : GridView.count(
-                      crossAxisCount: 3,
-                      children: List.generate(
-                        widget.worker.mediaUrls.length,
-                        (index) => Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(
-                                    widget.worker.mediaUrls[index]),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+Expanded(
+  child: widget.worker.mediaUrls.isEmpty || widget.worker.mediaUrls == null
+      ? const Center(
+          child: Text('No images to display'),
+        )
+      : GridView.count(
+          crossAxisCount: 3,
+          children: List.generate(
+            widget.worker.mediaUrls.length,
+            (index) => GestureDetector(
+              onTap: () {
+                // Handle onTap event here
+                _showBiggerImageDialog(widget.worker.mediaUrls[index]);
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(widget.worker.mediaUrls[index]),
+                      fit: BoxFit.cover,
                     ),
+                  ),
+                ),
+              ),
             ),
+          ),
+        ),
+),
+
 
             // Text(
             //   "Experience: ${widget.worker.experience} years",
