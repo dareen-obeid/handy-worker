@@ -26,7 +26,7 @@ final ReviewsService _reviewsService = ReviewsService();
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.worker.firstName+" "+ widget.worker.lastName),
+        title: Text("${widget.worker.firstName} ${widget.worker.lastName}"),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

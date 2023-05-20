@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:handyworker/screens/worker/profile_worker.dart';
 
+import '../NavigationBarItem/favorites.dart';
 import '../NavigationBarItem/home/home.dart';
 import '../NavigationBarItem/notification.dart';
 import '../NavigationBarItem/search.dart';
-
-
 
 class HomeWorker extends StatefulWidget {
   const HomeWorker({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _HomeWorkerState createState() => _HomeWorkerState();
 }
 
@@ -23,6 +23,7 @@ class _HomeWorkerState extends State<HomeWorker> {
     const ProfileWorker(),
   ];
   int currentIndex = 0;
+
   void onTap(int index) {
     setState(() {
       currentIndex = index;
@@ -31,6 +32,27 @@ class _HomeWorkerState extends State<HomeWorker> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final currentUserEmail = currentUser?.email;
+
+    Future<void> navigateToFavoritesPage() async {
+      final usersRef = FirebaseFirestore.instance.collection('users');
+      final userDoc = await usersRef.where('email', isEqualTo: currentUserEmail).get();
+
+      if (userDoc.docs.isNotEmpty) {
+        final userId = userDoc.docs.first.id;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FavPage(userId: userId),
+          ),
+        );
+      } else {
+        // Handle the case when user document is not found
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -59,15 +81,12 @@ class _HomeWorkerState extends State<HomeWorker> {
                 height: 32,
                 child: Icon(Icons.favorite_border, color: Colors.black),
               ),
-              onPressed: () {
-                // add favorite functionality here
-              },
+              onPressed: navigateToFavoritesPage,
             ),
           ],
         ),
       ),
-      body:
-       pages[currentIndex],
+      body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTap,
         currentIndex: currentIndex,
