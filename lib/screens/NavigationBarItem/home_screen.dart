@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:handyworker/screens/NavigationBarItem/favorites.dart';
 
@@ -30,6 +32,28 @@ class _HomesreenState extends State<Homesreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final currentUserEmail = currentUser?.email;
+
+    Future<void> navigateToFavoritesPage() async {
+      final usersRef = FirebaseFirestore.instance.collection('users');
+      final userDoc =
+          await usersRef.where('email', isEqualTo: currentUserEmail).get();
+
+      if (userDoc.docs.isNotEmpty) {
+        final userId = userDoc.docs.first.id;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FavPage(userId: userId),
+          ),
+        );
+      } else {
+        // Handle the case when user document is not found
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -58,14 +82,16 @@ class _HomesreenState extends State<Homesreen> {
                 height: 32,
                 child: Icon(Icons.favorite_border, color: Colors.black),
               ),
-              onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //       builder: (context) =>
-                //           const Favorites()), // Navigate to the favorite page
-                // );
-              },
+              onPressed: navigateToFavoritesPage,
+
+              // onPressed: () {
+              //   // Navigator.push(
+              //   //   context,
+              //   //   MaterialPageRoute(
+              //   //       builder: (context) =>
+              //   //           const Favorites()), // Navigate to the favorite page
+              //   // );
+              // },
             ),
           ],
         ),
