@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,7 +14,7 @@ class WorkerProfilePage extends StatefulWidget {
   _WorkerProfilePageState createState() => _WorkerProfilePageState();
 }
 
-int x = 1;
+int x = Random().nextInt(100000);
 
 class _WorkerProfilePageState extends State<WorkerProfilePage> {
   @override
@@ -140,10 +141,8 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
 
     String uid = FirebaseAuth.instance.currentUser!.uid;
     print(uid);
-    x++;
     Reference newRef =
         FirebaseStorage.instance.ref().child("https://profilepics/$uid$x.jpg");
-    x++;
     await newRef.putFile(File(image!.path));
 
     newRef.getDownloadURL().then((value) async {
