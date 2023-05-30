@@ -168,21 +168,85 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
     }
   }
 
-  void _showBiggerImageDialog(String imageUrl) {
+  void _showBiggerImageDialog(String imageUrl, int index) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.contain,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.network(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    _deleteImage(imageUrl, index);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Delete Image'),
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.resolveWith((states) {
+                      if (states.contains(MaterialState.pressed)) {
+                        return Colors.black26;
+                      }
+                      return const Color(0xFF00ABB3);
+                    }),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(90),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         );
       },
     );
+  }
+
+  Future<void> _deleteImage(String imageUrl, int index) async {
+    try {
+      // Delete image from Firebase Storage
+      await FirebaseStorage.instance.refFromURL(imageUrl).delete();
+
+      // Remove image URL from mediaUrls list
+      setState(() {
+        mediaUrls.removeAt(index);
+      });
+
+      // Update mediaUrls in Firestore
+      await _updateMediaUrls(mediaUrls);
+    } catch (error) {
+      // Handle any errors that occur during deletion
+      print('Error deleting image: $error');
+      // Display an error message to the user, if needed
+    }
+  }
+
+  Future<void> _updateMediaUrls(List<String> mediaUrls) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      final email = user?.email ?? '';
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('workers')
+          .where('email', isEqualTo: email)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        var documentSnapshot = querySnapshot.docs[0];
+        await documentSnapshot.reference.update({'mediaUrls': mediaUrls});
+      }
+    } catch (error) {
+      print('Error updating mediaUrls: $error');
+      // Handle any errors that occur during the update
+    }
   }
 
   @override
@@ -430,7 +494,7 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
                       itemBuilder: (BuildContext context, int index) {
                         return GestureDetector(
                           onTap: () {
-                            _showBiggerImageDialog(mediaUrls[index]);
+                            _showBiggerImageDialog(mediaUrls[index], index);
                           },
                           child: Container(
                             margin: const EdgeInsets.all(2),
