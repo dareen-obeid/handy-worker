@@ -115,25 +115,37 @@ class _ProfileWorkerState extends State<ProfileWorker> {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.person_2),
-              title: const Text('retuen to normal worker'),
+              title: const Text('return to normal user'),
               onTap: () async {
-                final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-                final CollectionReference _workerCollection =
-                    _firestore.collection('workers');
-
-                final QuerySnapshot snapshot = await _workerCollection
-                    .where('email', isEqualTo: email)
-                    .get();
-
-                if (snapshot.docs.isNotEmpty) {
-                  final DocumentSnapshot doc = snapshot.docs[0];
-                  await _workerCollection.doc(doc.id).delete();
-                }
-                print(email);
-
-                // ignore: use_build_context_synchronously
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Homesreen()));
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Are you sure? '),
+                      content: const Text(
+                          'your account will delete '),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const Homesreen()),
+                            );
+                          },
+                          child: const Text('Yes'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                          child: const Text('No'),
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
             ),
             const Divider(),
