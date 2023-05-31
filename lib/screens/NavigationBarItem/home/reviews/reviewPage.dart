@@ -43,10 +43,6 @@ class _ReviewPageState extends State<ReviewPage> {
               fontWeight: FontWeight.bold),
         ),
       ),
-
-      // appBar: AppBar(
-      //   title: Text("${widget.worker.firstName} ${widget.worker.lastName}"),
-      // ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -77,32 +73,63 @@ class _ReviewPageState extends State<ReviewPage> {
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                // Text(
-                //   'Rating: ${widget.worker.rating}',
-                //   style: TextStyle(fontSize: 18),
-                // ),
-                // SizedBox(height: 8),
-                // Text(
-                //   'Number of reviews: ${widget.worker.numReviews}',
-                //   style: TextStyle(fontSize: 18),
-                // ),
+              children:  [
+                FutureBuilder<List<Review>>(
+                  future: _reviewsService.getReviewsForWorker(widget.worker.id),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    if (snapshot.hasError) {
+                      return const Center(
+                        child: Text('Error loading reviews'),
+                      );
+                    }
+
+                    List<Review> reviews = snapshot.data!;
+                    double totalRating = 0;
+
+                    for (Review review in reviews) {
+                      totalRating += review.rating;
+                    }
+
+                    double averageRating = reviews.isNotEmpty ? totalRating / reviews.length : 0;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Rating: ${averageRating.toStringAsFixed(1)}',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Number of reviews: ${reviews.length}',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           ),
           Expanded(
-            child: StreamBuilder<List<Review>>(
-              stream: _reviewsService.getReviewsForWorker(widget.worker.id),
+            child: FutureBuilder<List<Review>>(
+              future: _reviewsService.getReviewsForWorker(widget.worker.id),
               builder: (context, snapshot) {
-                if (snapshot.hasError) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
-                    child: Text('Error loading reviews'),
+                    child: CircularProgressIndicator(),
                   );
                 }
 
-                if (!snapshot.hasData) {
+                if (snapshot.hasError) {
                   return const Center(
-                    child: CircularProgressIndicator(),
+                    child: Text('Error loading reviews'),
                   );
                 }
 
@@ -232,8 +259,7 @@ class _ReviewPageState extends State<ReviewPage> {
                     ),
                   ),
                 ),
-                                const SizedBox(height: 30),
-
+                const SizedBox(height: 30),
               ],
             ),
           ),
