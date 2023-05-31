@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -17,6 +18,8 @@ class Worker {
   final String description;
   final Map<String, String> availability;
   final List<String> mediaUrls;
+  final double rating;
+  final int numReviews;
 
   Worker({
     required this.id,
@@ -31,6 +34,9 @@ class Worker {
     required this.description,
     required this.availability,
     required this.mediaUrls,
+    this.numReviews = 0,
+    this.rating = 0.0,
+    
   });
   factory Worker.fromSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -49,6 +55,8 @@ class Worker {
       mediaUrls:
           data['mediaUrls'] != null ? List<String>.from(data['mediaUrls']) : [],
       uid: data['uid'] ?? '',
+      rating: (data['rating'] ?? 0.0).toDouble(),
+      numReviews: data['numReviews'] ?? 0,
     );
   }
 
