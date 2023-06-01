@@ -119,119 +119,132 @@ bool isFavorite(String workerId) {
 
 
   @override
-  Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF00ABB3),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          color: Colors.white,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          widget.service,
-          style: const TextStyle(
-            color: Color.fromARGB(255, 255, 255, 255),
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: ListView.builder(
-        itemCount: workers!.length,
-        itemBuilder: (BuildContext context, int index) {
-          final worker = workers![index];
-          final isFavoriteWorker = isFavorite(worker.id);
-
-          return Card(
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WorkerFromUser(worker: worker),
-                  ),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 100,
-                      width: 100,
-                      child: worker.photoUrl != null &&
-                              worker.photoUrl.isNotEmpty &&
-                              Uri.parse(worker.photoUrl).isAbsolute
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                worker.photoUrl,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : Image.network(
-                              'https://www.w3schools.com/w3images/avatar2.png',
-                              fit: BoxFit.cover,
-                            ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "${worker.firstName} ${worker.lastName}",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            worker.city,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        isFavoriteWorker ? Icons.favorite : Icons.favorite_border,
-                        color: isFavoriteWorker ? Colors.red : null,
-                      ),
-                      onPressed: () {
-                        final userEmail = user?.email;
-                        if (userEmail != null) {
-                          setState(() {
-                            if (isFavoriteWorker) {
-                              removeFromFavorites(userEmail, worker.id);
-                            } else {
-                              addToFavorites(userEmail, worker.id);
-                            }
-                          });
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
+Widget build(BuildContext context) {
+  if (isLoading) {
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }
+
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: const Color(0xFF00ABB3),
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios),
+        color: Colors.white,
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(
+        widget.service,
+        style: const TextStyle(
+          color: Color.fromARGB(255, 255, 255, 255),
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+    body: ListView.builder(
+      itemCount: workers!.length,
+      itemBuilder: (BuildContext context, int index) {
+        final worker = workers![index];
+        final isFavoriteWorker = isFavorite(worker.id);
+
+        return Card(
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => WorkerFromUser(worker: worker),
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: worker.photoUrl != null &&
+                        worker.photoUrl.isNotEmpty &&
+                        Uri.parse(worker.photoUrl).isAbsolute
+                        ? ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        worker.photoUrl,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                        : Image.network(
+                      'https://www.w3schools.com/w3images/avatar2.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${worker.firstName} ${worker.lastName}",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          worker.city,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 15),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.star,
+                              color: Colors.yellow,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(worker.rating.toString()),
+                            const SizedBox(width: 8),
+                            Text('| (${worker.numReviews}) reviews'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      isFavoriteWorker ? Icons.favorite : Icons.favorite_border,
+                      color: isFavoriteWorker ? Colors.red : null,
+                    ),
+                    onPressed: () {
+                      final userEmail = user?.email;
+                      if (userEmail != null) {
+                        setState(() {
+                          if (isFavoriteWorker) {
+                            removeFromFavorites(userEmail, worker.id);
+                          } else {
+                            addToFavorites(userEmail, worker.id);
+                          }
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}
 }
