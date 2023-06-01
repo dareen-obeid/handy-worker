@@ -288,10 +288,7 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
                     ),
             ),
 
-            // Text(
-            //   "Experience: ${widget.worker.experience} years",
-            //   style: TextStyle(fontSize: 18),
-            // ),
+           
           ],
         ),
       ),
