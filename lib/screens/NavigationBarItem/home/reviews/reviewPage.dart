@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -19,6 +20,7 @@ class ReviewPage extends StatefulWidget {
 class _ReviewPageState extends State<ReviewPage> {
   final ReviewsService _reviewsService = ReviewsService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _reviewTextController = TextEditingController();
   double _rating = 0;
 
@@ -73,7 +75,7 @@ class _ReviewPageState extends State<ReviewPage> {
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children:  [
+              children: [
                 FutureBuilder<List<Review>>(
                   future: _reviewsService.getReviewsForWorker(widget.worker.id),
                   builder: (context, snapshot) {
@@ -215,6 +217,7 @@ class _ReviewPageState extends State<ReviewPage> {
                     if (user == null) {
                       Navigator.pushNamed(context, '/login');
                     } else {
+                      // Add the review to the reviews collection
                       await _reviewsService.addReview(
                         widget.worker.id,
                         user.uid,
@@ -225,14 +228,30 @@ class _ReviewPageState extends State<ReviewPage> {
 
                       _reviewTextController.clear();
 
+                      // Calculate the new average rating and number of reviews
+                      List<Review> reviews = await _reviewsService.getReviewsForWorker(widget.worker.id);
+                      double totalRating = 0;
+
+                      for (Review review in reviews) {
+                        totalRating += review.rating;
+                      }
+
+                      double averageRating = reviews.isNotEmpty ? totalRating / reviews.length : 0;
+                      int numReviews = reviews.length;
+
+                      // Update the worker document in the workers collection
+                      await _firestore.collection('workers').doc(widget.worker.id).update({
+                        'rating': averageRating,
+                        'numReviews': numReviews,
+                      });
+
                       setState(() {
                         _rating = 0;
                       });
                     }
                   },
                   style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.resolveWith((states) {
+                    backgroundColor: MaterialStateProperty.resolveWith((states) {
                       if (states.contains(MaterialState.pressed)) {
                         return Colors.black26;
                       }
