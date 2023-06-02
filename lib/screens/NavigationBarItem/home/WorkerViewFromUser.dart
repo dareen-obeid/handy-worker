@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:handyworker/screens/NavigationBarItem/home/reviews/reviewPage.dart';
@@ -15,6 +16,8 @@ class WorkerFromUser extends StatefulWidget {
 class _WorkerFromUserState extends State<WorkerFromUser> {
   late String? email;
   late String photo = "";
+  bool isFavorite = false;
+  Set<String> favorites = {};
 
   @override
   void initState() {
@@ -22,6 +25,22 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
     final user = FirebaseAuth.instance.currentUser;
     email = user?.email ?? ' ';
     photo = user?.photoURL ?? ' ';
+
+    if (email != null) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .get()
+          .then((snapshot) {
+        if (snapshot.docs.isNotEmpty) {
+          final userDoc = snapshot.docs.first;
+          setState(() {
+            favorites = Set<String>.from(userDoc.data()['favorites'] ?? []);
+            isFavorite = favorites.contains(widget.worker.id);
+          });
+        }
+      });
+    }
   }
 
   void _showBiggerImageDialog(String imageUrl) {
@@ -39,6 +58,58 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
         );
       },
     );
+  }
+
+  Future<void> addToFavorites(String userEmail, String workerId) async {
+    try {
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: userEmail)
+          .get();
+
+      if (userSnapshot.docs.isNotEmpty) {
+        final userDoc = userSnapshot.docs.first;
+        final userRef =
+            FirebaseFirestore.instance.collection('users').doc(userDoc.id);
+
+        await userRef.update({
+          'favorites': FieldValue.arrayUnion([workerId])
+        });
+
+        setState(() {
+          isFavorite = true;
+          favorites.add(workerId);
+        });
+      }
+    } catch (error) {
+      // Handle error here
+    }
+  }
+
+  Future<void> removeFromFavorites(String userEmail, String workerId) async {
+    try {
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: userEmail)
+          .get();
+
+      if (userSnapshot.docs.isNotEmpty) {
+        final userDoc = userSnapshot.docs.first;
+        final userRef =
+            FirebaseFirestore.instance.collection('users').doc(userDoc.id);
+
+        await userRef.update({
+          'favorites': FieldValue.arrayRemove([workerId])
+        });
+
+        setState(() {
+          isFavorite = false;
+          favorites.remove(workerId);
+        });
+      }
+    } catch (error) {
+      // Handle error here
+    }
   }
 
   @override
@@ -164,6 +235,24 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
                       ],
                     ),
                   ),
+                  IconButton(
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : null,
+                    ),
+                    onPressed: () {
+                      final user = FirebaseAuth.instance.currentUser;
+                      final userEmail = user?.email;
+
+                      if (userEmail != null) {
+                        if (isFavorite) {
+                          removeFromFavorites(userEmail, widget.worker.id);
+                        } else {
+                          addToFavorites(userEmail, widget.worker.id);
+                        }
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
@@ -171,7 +260,6 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
               thickness: 1,
               color: Colors.grey[400],
             ),
-
             Container(
               margin: const EdgeInsets.only(top: 10),
               child: Column(
@@ -231,19 +319,15 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
                 ],
               ),
             ),
-
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //         builder: (context) => ReviewPage(worker: widget.worker),
-            //       ),
-            //     );
-            //   },
-            //   child: const Text('Rate and Review'),
-            // ),
-
+            Container(
+              margin: const EdgeInsets.only(top: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ... existing code ...
+                ],
+              ),
+            ),
             const Text(
               "Photos",
               style: TextStyle(
@@ -287,8 +371,6 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
                       ),
                     ),
             ),
-
-           
           ],
         ),
       ),
