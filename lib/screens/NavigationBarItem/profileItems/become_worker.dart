@@ -46,15 +46,18 @@ class _BecomeWorkerState extends State<BecomeWorker> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> services = [
-      'Plumbing',
-      'Painting',
-      'Carpentry',
-      'Electrical work',
-      'House Cleaning',
-      'Blacksmithing',
-      'Welding',
-    ];
+List<String> services = [
+  "Electrical work",
+  "Plumbing",
+  "Painting",
+  "Blacksmithing",
+  "Welding",
+  "Glasswork",
+  "Appliance repair",
+  "Tiling",
+  "Carpentry",
+  "HVAC",
+];
 // Create a List of DropdownMenuItem from the list of services
     List<DropdownMenuItem<String>> serviceItems = services
         .map((service) => DropdownMenuItem<String>(
