@@ -14,13 +14,16 @@ class HomePage extends StatefulWidget {
 }
 
 List<String> services = [
-  'Electrical work',
-  'Plumbing',
-  'Painting',
-  'Blacksmithing',
-  'Welding',
-  'Carpentry',
-  'House Cleaning',
+  "Electrical work",
+  "Plumbing",
+  "Painting",
+  "Blacksmithing",
+  "Welding",
+  "Glasswork",
+  "Appliance repair",
+  "Tiling",
+  "Carpentry",
+  "HVAC",
 ];
 
 class _HomePageState extends State<HomePage> {
@@ -34,6 +37,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
+    print(services.length);
+
     retrieveFavorites();
 
     isLoading = true;
@@ -157,13 +163,36 @@ class _HomePageState extends State<HomePage> {
               'label': services[3]
             },
             {
-              'color': const Color.fromARGB(255, 253, 149, 93),
-              'icon': Icons.ac_unit,
+              'color': Color.fromARGB(255, 248, 200, 57),
+              'icon': Icons.build,
               'label': services[4]
             },
-            
+            {
+              'color': Color.fromARGB(255, 91, 236, 236),
+              'icon': Icons.window_outlined,
+              'label': services[5]
+            },
+            {
+              'color': Color.fromARGB(255, 218, 181, 245),
+              'icon': Icons.ac_unit,
+              'label': services[6]
+            },
+            {
+              'color': Color.fromARGB(255, 242, 175, 212),
+              'icon': Icons.ac_unit,
+              'label': services[7]
+            },
+            {
+              'color': Color.fromARGB(255, 97, 220, 109),
+              'icon': Icons.carpenter,
+              'label': services[8]
+            },
+            {
+              'color': const Color.fromARGB(255, 253, 149, 93),
+              'icon': Icons.ac_unit,
+              'label': services[9]
+            },
           ]),
-
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
@@ -185,6 +214,7 @@ class _HomePageState extends State<HomePage> {
 
               return Card(
                 child: InkWell(
+                  
                   onTap: () {
                     Navigator.push(
                       context,
@@ -230,7 +260,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                worker.city,
+                                worker.service,
                                 style: const TextStyle(fontSize: 16),
                               ),
                               const SizedBox(height: 15),
@@ -328,12 +358,14 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
+          Center(
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 11.5,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
