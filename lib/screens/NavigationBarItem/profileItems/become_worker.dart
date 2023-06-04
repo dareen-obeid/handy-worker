@@ -29,6 +29,7 @@ class _BecomeWorkerState extends State<BecomeWorker> {
   final TextEditingController _phototTextController = TextEditingController();
 
   late String _selectedItem;
+  late String _selectedCity;
 
   // Future<void> _addUserDetails() async {
   //   final email = FirebaseAuth.instance.currentUser!.email;
@@ -58,6 +59,18 @@ List<String> services = [
   "Carpentry",
   "HVAC",
 ];
+
+List<String> cities = [
+  "Jerusalem",
+  "Ramallah",
+  "Bethlehem",
+  "Nablus",
+  "Hebron",
+  "Jericho",
+  "Jenin",
+  "Tulkarm",
+
+];
 // Create a List of DropdownMenuItem from the list of services
     List<DropdownMenuItem<String>> serviceItems = services
         .map((service) => DropdownMenuItem<String>(
@@ -75,6 +88,22 @@ List<String> services = [
 
 // Sort the list of DropdownMenuItem alphabetically
     serviceItems.sort((a, b) => a.value!.compareTo(b.value!));
+
+
+    List<DropdownMenuItem<String>> serviceCity = cities
+        .map((city) => DropdownMenuItem<String>(
+              value: city,
+              child: Text(
+                city,
+                style: const TextStyle(
+                  color: Color(0xFF626262),
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16.0,
+                ),
+              ),
+            ))
+        .toList();
+
     return Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
@@ -120,8 +149,47 @@ List<String> services = [
               const SizedBox(
                 height: 20,
               ),
-              reusableTextField("Enter your City", Icons.location_city, false,
-                  _cityTextController),
+              // reusableTextField("Enter your City", Icons.location_city, false,
+              //     _cityTextController),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.location_city,
+                    color: const Color(0xFF848484).withOpacity(0.7),
+                  ),
+                  labelText: "select city",
+                  labelStyle: const TextStyle(
+                    color: Color(0xFF848484),
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFB2B2B2).withOpacity(0.5),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                style: const TextStyle(
+                  color: Color(0xFF626262),
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16.0,
+                ),
+                iconEnabledColor: const Color(0xFF848484).withOpacity(0.7),
+                items: serviceCity,
+                onChanged: (String? value) {
+                  _selectedCity = value!;
+                },
+              ),
+
+
+
               const SizedBox(
                 height: 20,
               ),
@@ -179,7 +247,7 @@ List<String> services = [
                   lastName: _lastTextController.text,
                   email: email,
                   phone: _phoneTextController.text,
-                  city: _cityTextController.text,
+                  city: _selectedCity,
                   service: _selectedItem,
                   availability: {},
                   description: '',

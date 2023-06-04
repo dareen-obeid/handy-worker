@@ -271,7 +271,7 @@ class _HomePageState extends State<HomePage> {
                                     color: Colors.yellow,
                                   ),
                                   const SizedBox(width: 5),
-                                  Text(worker.rating.toString()),
+                                  Text(worker.rating.toStringAsFixed(2)),
                                   const SizedBox(width: 8),
                                   Text('| (${worker.numReviews}) reviews'),
                                 ],
