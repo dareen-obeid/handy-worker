@@ -174,12 +174,12 @@ class _HomePageState extends State<HomePage> {
             },
             {
               'color': Color.fromARGB(255, 218, 181, 245),
-              'icon': Icons.ac_unit,
+              'icon': Icons.home_repair_service_rounded,
               'label': services[6]
             },
             {
               'color': Color.fromARGB(255, 242, 175, 212),
-              'icon': Icons.ac_unit,
+              'icon': Icons.gite_rounded,
               'label': services[7]
             },
             {
