@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/worker.dart';
+import 'FilterPage.dart';
 import 'home/WorkerViewFromUser.dart';
 
 class SearchPage extends StatefulWidget {
@@ -13,7 +14,6 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   List<DocumentSnapshot> _allResults = [];
   List<DocumentSnapshot> _resultsList = [];
-  bool _showFilterScreen = false;
   TextEditingController _searchController = TextEditingController();
 
   @override
@@ -50,10 +50,27 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  void _toggleFilterScreen() {
-    setState(() {
-      _showFilterScreen = !_showFilterScreen;
-    });
+  void _toggleFilterScreen() async {
+    // Navigate to the filter page and receive the filter options
+    final filterOptions = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FilterPage(
+          resultsList: _resultsList,
+          allResults: _allResults,
+        ),
+      ),
+    );
+
+    if (filterOptions != null) {
+      // Retrieve the filtered results from the filter page
+      List<DocumentSnapshot> filteredResults =
+          filterOptions['filteredResults'];
+
+      setState(() {
+        _resultsList = filteredResults;
+      });
+    }
   }
 
   @override
@@ -99,72 +116,65 @@ class _SearchPageState extends State<SearchPage> {
               ],
             ),
           ),
-          if (_showFilterScreen)
-            Container(
-              color: Colors.white.withOpacity(0.9),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        onPressed: _toggleFilterScreen,
-                        icon: const Icon(Icons.close),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _resultsList.length,
+              itemBuilder: (context, index) {
+                final result = _resultsList[index];
+                return ListTile(
+                  leading: result['photoUrl'] != null &&
+                          result['photoUrl'].isNotEmpty &&
+                          result['photoUrl'] != " "
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            result['photoUrl'],
+                            fit: BoxFit.cover,
+                            width: 50,
+                            height: 50,
+                          ),
+                        )
+                      : Image.network(
+                          'https://www.w3schools.com/w3images/avatar2.png',
+                          fit: BoxFit.cover,
+                          width: 50,
+                          height: 50,
+                        ),
+                  title: Text(result['firstName'] + " " + result['lastName']),
+                  subtitle: Text(result['service']),
+                  onTap: () {
+                    // Open worker details page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WorkerFromUser(
+                          worker: Worker.fromSnapshot(result),
+                        ),
                       ),
-                    ],
-                  ),
-                  const Expanded(
-                    child: Center(
-                      child: Text(
-                        'Filter Screen',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                    );
+                  },
+                );
+              },
             ),
-    Expanded(
-  child: ListView.builder(
-    itemCount: _resultsList.length,
-    itemBuilder: (context, index) {
-      final result = _resultsList[index];
-      return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => WorkerFromUser(worker: Worker.fromSnapshot(result)),
-            ),
-          );
-        },
-        child: ListTile(
-          leading: result['photoUrl'] != null &&
-                  result['photoUrl'].isNotEmpty &&
-                  result['photoUrl'] != " "
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    result['photoUrl'],
-                    fit: BoxFit.cover,
-                    width: 50,
-                    height: 50,
-                  ),
-                )
-              : Image.network(
-                  'https://www.w3schools.com/w3images/avatar2.png',
-                  fit: BoxFit.cover,
-                  width: 50,
-                  height: 50,
-                ),
-          title: Text(result['firstName'] + " " + result['lastName']),
-          subtitle: Text(result['service']),
-        ),
-      );
-    },
-  ),
-),
-
+          ),
+          //  Expanded(
+          //   child: _resultsList.isNotEmpty
+          //       ? ListView.builder(
+          //           itemCount: _resultsList.length,
+          //           itemBuilder: (context, index) {
+          //             final result = _resultsList[index];
+          //             return const ListTile(
+          //               // ListTile code...
+          //             );
+          //           },
+          //         )
+          //       : const Center(
+          //           child: Text(
+          //             'No Match',
+          //             style: TextStyle(fontSize: 20),
+          //           ),
+          //         ),
+          // ),
         ],
       ),
     );
