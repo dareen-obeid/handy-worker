@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:handyworker/screens/NavigationBarItem/home/reviews/reviewPage.dart';
 import '../../../models/worker.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+
 class WorkerFromUser extends StatefulWidget {
   final Worker worker;
 
@@ -112,6 +114,24 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
     }
   }
 
+  // void _launchPhone(String phoneNumber) async {
+  //   final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+  //   if (await canLaunch(phoneUri.toString())) {
+  //     await launch(phoneUri.toString());
+  //   } else {
+  //     // Handle the case where the phone call cannot be launched
+  //     // Get.snackbar("Sorry", "Could not launch phone");
+  //   }
+  // }
+
+  _calling() async {
+const url = 'tel:+970512345678';
+if (await canLaunch(url)) {
+  await launch(url);
+} else {
+  throw 'Could not launch $url';
+}
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -321,7 +341,7 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
             ),
             Container(
               margin: const EdgeInsets.only(top: 10),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ... existing code ...
@@ -373,99 +393,19 @@ class _WorkerFromUserState extends State<WorkerFromUser> {
             ),
           ],
         ),
+
+        
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _calling();
+        },
+        backgroundColor: const Color(0xFF00ABB3),
+        child: const Icon(
+          Icons.phone,
+          color: Colors.white,
+        ),
       ),
     );
   }
 }
-
-
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import '../../../models/worker.dart';
-
-// class WorkerFromUser extends StatefulWidget {
-//   final Worker worker;
-
-//   const WorkerFromUser({ Key? key, required this.worker }) : super(key: key);
-
-//   @override
-//   _WorkerFromUserState createState() => _WorkerFromUserState();
-// }
-
-
-// class _WorkerFromUserState extends State<WorkerFromUser> {
-
-//   late String? email;
-//   late String photo = "";
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     final user = FirebaseAuth.instance.currentUser;
-//     email = user?.email ?? ' ';
-//     photo =user?.photoURL ?? ' ';
- 
-//   }
-  
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         backgroundColor: Color(0xFF00ABB3),
-//         elevation: 0,
-//         leading: IconButton(
-//           icon: const Icon(Icons.arrow_back_ios),
-//           color: Colors.white,
-//           onPressed: () {
-//             Navigator.pop(context);
-//           },
-//         ),
-//         title: const Text(
-//           "Worker Details",
-//           style: TextStyle(
-//               color: Color.fromARGB(255, 255, 255, 255),
-//               fontSize: 24,
-//               fontWeight: FontWeight.bold),
-//         ),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Card(
-//           elevation: 4.0,
-//           child: Row(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               SizedBox(
-//                 width: 120.0,
-//                 height: 120.0,
-//                 child: ClipRRect(
-//                   borderRadius: BorderRadius.circular(8.0),
-//                   child: Image.network(
-//                     photo,
-//                     fit: BoxFit.cover,
-//                   ),
-//                 ),
-//               ),
-//               SizedBox(width: 16.0),
-//               Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   SizedBox(height: 16.0),
-//                   Text(
-//                     "${widget.worker.firstName} ${widget.worker.lastName}",
-//                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-//                   ),
-//                   SizedBox(height: 8.0),
-//                   Text(
-//                     "${widget.worker.city}",
-//                     style: TextStyle(fontSize: 18),
-//                   ),
-//                 ],
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
