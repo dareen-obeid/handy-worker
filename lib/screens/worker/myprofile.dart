@@ -14,7 +14,7 @@ class WorkerProfilePage extends StatefulWidget {
   _WorkerProfilePageState createState() => _WorkerProfilePageState();
 }
 
-int x = Random().nextInt(100000);
+
 
 class _WorkerProfilePageState extends State<WorkerProfilePage> {
   @override
@@ -141,9 +141,13 @@ class _WorkerProfilePageState extends State<WorkerProfilePage> {
 
     String uid = FirebaseAuth.instance.currentUser!.uid;
     print(uid);
+
+    int x = Random().nextInt(100000);
     Reference newRef =
         FirebaseStorage.instance.ref().child("https://profilepics/$uid$x.jpg");
     await newRef.putFile(File(image!.path));
+
+    print(x);
 
     newRef.getDownloadURL().then((value) async {
       print(value);
