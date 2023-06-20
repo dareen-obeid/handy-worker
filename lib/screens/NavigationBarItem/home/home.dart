@@ -9,11 +9,24 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
 List<String> services = [
+  "Electrical work",
+  "Plumbing",
+  "Painting",
+  "Blacksmithing",
+  "Welding",
+  "Glasswork",
+  "Appliance repair",
+  "Tiling",
+  "Carpentry",
+  "HVAC",
+];
+
+List<String> services2 = [
+  "All",
   "Electrical work",
   "Plumbing",
   "Painting",
@@ -34,13 +47,14 @@ class _HomePageState extends State<HomePage> {
   // Use a Set to store favorite worker IDs
   Set<String> favorites = {};
 
+  String selectedService = services2[0];
+
   @override
   void initState() {
     super.initState();
 
-    print(services.length);
-
     retrieveFavorites();
+
 
     isLoading = true;
     // Retrieve the list of workers from Firebase based on the selected service
@@ -193,6 +207,7 @@ class _HomePageState extends State<HomePage> {
               'label': services[9]
             },
           ]),
+
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
@@ -203,109 +218,188 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          const SizedBox(height: 10),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: workers?.length ?? 0,
-            itemBuilder: (BuildContext context, int index) {
-              final worker = workers![index];
-              final isFavoriteWorker = isFavorite(worker.id);
+          const SizedBox(height: 20),
 
-              return Card(
-                child: InkWell(
-                  
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => WorkerFromUser(worker: worker),
+          // SizedBox for services
+          Column(
+            children: [
+              SizedBox(
+                height: 40,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: services2.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    bool isSelected = (selectedService == services2[index]);
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedService = services2[index];
+                          print(selectedService);
+                        });
+
+                        // Update the workers list based on the selected service
+                        if (selectedService == "All") {
+                          FirebaseFirestore.instance
+                              .collection('workers')
+                              .orderBy('rating', descending: true)
+                              .limit(10)
+                              .get()
+                              .then((snapshot) {
+                            setState(() {
+                              workers = snapshot.docs
+                                  .map((doc) => Worker.fromSnapshot(doc))
+                                  .toList();
+                            });
+                          });
+                        } else {
+                          fetchWorkersByService(selectedService);
+                        }
+                      },
+                      child: Container(
+                        width: 106,
+                        margin: const EdgeInsets.only(left: 4, right: 4),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFF00ABB3)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: const Color(0xFF00ABB3),
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            services2[index],
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isSelected
+                                  ? Colors.white
+                                  : const Color(0xFF00ABB3),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
                     );
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: 100,
-                          width: 100,
-                          child: worker.photoUrl != null &&
-                                  worker.photoUrl.isNotEmpty &&
-                                  Uri.parse(worker.photoUrl).isAbsolute
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    worker.photoUrl,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : Image.network(
-                                  'https://www.w3schools.com/w3images/avatar2.png',
-                                  fit: BoxFit.cover,
-                                ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+// Display the list of workers
+          isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: workers?.length ?? 0,
+                  itemBuilder: (BuildContext context, int index) {
+                    final worker = workers![index];
+                    final isFavoriteWorker = isFavorite(worker.id);
+
+                    return Card(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  WorkerFromUser(worker: worker),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                "${worker.firstName} ${worker.lastName}",
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                              SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: worker.photoUrl != null &&
+                                        worker.photoUrl.isNotEmpty &&
+                                        Uri.parse(worker.photoUrl).isAbsolute
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.network(
+                                          worker.photoUrl,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Image.network(
+                                        'https://www.w3schools.com/w3images/avatar2.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "${worker.firstName} ${worker.lastName}",
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      worker.service,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    const SizedBox(height: 15),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.star,
+                                          color: Colors.yellow,
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Text(worker.rating.toStringAsFixed(2)),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                            '| (${worker.numReviews}) reviews'),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                worker.service,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 15),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.star,
-                                    color: Colors.yellow,
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Text(worker.rating.toStringAsFixed(2)),
-                                  const SizedBox(width: 8),
-                                  Text('| (${worker.numReviews}) reviews'),
-                                ],
+                              IconButton(
+                                icon: Icon(
+                                  isFavoriteWorker
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: isFavoriteWorker ? Colors.red : null,
+                                ),
+                                onPressed: () {
+                                  final userEmail = user?.email;
+                                  if (userEmail != null) {
+                                    setState(() {
+                                      if (isFavoriteWorker) {
+                                        removeFromFavorites(
+                                            userEmail, worker.id);
+                                      } else {
+                                        addToFavorites(userEmail, worker.id);
+                                      }
+                                    });
+                                  }
+                                },
                               ),
                             ],
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(
-                            isFavoriteWorker
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: isFavoriteWorker ? Colors.red : null,
-                          ),
-                          onPressed: () {
-                            final userEmail = user?.email;
-                            if (userEmail != null) {
-                              setState(() {
-                                if (isFavoriteWorker) {
-                                  removeFromFavorites(userEmail, worker.id);
-                                } else {
-                                  addToFavorites(userEmail, worker.id);
-                                }
-                              });
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ],
       ),
     );
@@ -371,5 +465,19 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  void fetchWorkersByService(String selectedService) {
+    FirebaseFirestore.instance
+        .collection('workers')
+        .where('service', isEqualTo: selectedService)
+        .orderBy('rating', descending: true)
+        .limit(10)
+        .get()
+        .then((snapshot) {
+      setState(() {
+        workers = snapshot.docs.map((doc) => Worker.fromSnapshot(doc)).toList();
+      });
+    });
   }
 }
